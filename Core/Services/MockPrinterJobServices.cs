@@ -37,7 +37,7 @@ namespace PrintJobInterceptor.Core.Services
         public void StartMonitoring()
         {
            
-            RunTest(TestScenario.SequentialJobNames);
+            RunTest(TestScenario.EdgeCases);
         }
         public async void RunTest(TestScenario scenario)
         {
@@ -67,7 +67,7 @@ namespace PrintJobInterceptor.Core.Services
             for (int i = 1; i <= jobCount; i++)
             {
                 FireJobEvent(docName);
-                await Task.Delay(500);
+                await Task.Delay(1500);
             }
             await Task.Delay(GROUPING_TIMEOUT_MS + 1000);
             FireJobEvent(docName);
@@ -79,7 +79,7 @@ namespace PrintJobInterceptor.Core.Services
             await Task.Delay(500);
             FireJobEvent($"{baseName}_002.pdf");
             await Task.Delay(500);
-            FireJobEvent($"{baseName} (Part 3).pdf"); // A different pattern
+            FireJobEvent($"{baseName} (Part 3).pdf"); 
         }
         private async Task SimulateEdgeCases()
         {
@@ -92,7 +92,11 @@ namespace PrintJobInterceptor.Core.Services
 
             FireJobEvent("Shared-Report.pdf", "Alice");
             await Task.Delay(1000);
-            FireJobEvent("Shared-Report.pdf", "Bob");
+            FireJobEvent("Shared-Report.pdf", "Alice");
+            await Task.Delay(2000);
+            FireJobEvent("Shared-Report.pdf", "Alice");
+            await Task.Delay(6500);
+            FireJobEvent("Shared-Report.pdf", "Alice");
         }
 
         private async Task SimulateSingleJobs(int jobCount)
