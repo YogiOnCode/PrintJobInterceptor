@@ -10,7 +10,7 @@ namespace PrintJobInterceptor.UI.Interfaces
 {
     public interface IMainFormView
     {
-        void DisplayJobs(IEnumerable<PrintJob> jobs);
+        void DisplayJobGroups(IEnumerable<PrintJobGroup> groups);
         void ShowNotification(string message, FeedbackType type);
 
         event Action<int> PauseJobRequested;

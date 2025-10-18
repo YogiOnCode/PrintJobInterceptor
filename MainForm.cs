@@ -27,16 +27,17 @@ namespace PrintJobInterceptor
             _presenter.Start();
         }
 
-        public void DisplayJobs(IEnumerable<PrintJob> jobs)
+        public void DisplayJobGroups(IEnumerable<PrintJobGroup> groups)
         {
             if (dgvPrintJobs.InvokeRequired)
             {
-                dgvPrintJobs.Invoke(new Action(() => DisplayJobs(jobs)));
+                dgvPrintJobs.Invoke(new Action(() => DisplayJobGroups(groups)));
                 return;
             }
 
+            // Bind the list of groups to the DataGridView
             dgvPrintJobs.DataSource = null;
-            dgvPrintJobs.DataSource = jobs.ToList();
+            dgvPrintJobs.DataSource = groups.ToList();
         }
 
         public void ShowNotification(string message, FeedbackType type)
