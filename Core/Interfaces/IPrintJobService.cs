@@ -10,6 +10,8 @@ namespace PrintJobInterceptor.Core.Interfaces
     public interface IPrintJobService
     {
         event Action<PrintJob> JobSpooling;
+        event Action<PrintJob> JobUpdated;
+        event Action<PrintJob> JobDeleted;
 
         void StartMonitoring();
         void StopMonitoring();
