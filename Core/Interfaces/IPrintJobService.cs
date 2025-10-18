@@ -17,6 +17,6 @@ namespace PrintJobInterceptor.Core.Interfaces
         void PauseJob(int jobId);
         void ResumeJob(int jobId);
         void CancelJob(int jobId);
-
+        void SimulateGroupedJob();
     }
 }

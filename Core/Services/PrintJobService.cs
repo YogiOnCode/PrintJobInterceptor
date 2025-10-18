@@ -31,6 +31,7 @@ namespace PrintJobInterceptor.Core.Services
 
 
         }
+
         private void OnJobCreation(object sender, EventArrivedEventArgs e)
         {
             var targetInstance = e.NewEvent["TargetInstance"] as ManagementBaseObject;
@@ -95,7 +96,9 @@ namespace PrintJobInterceptor.Core.Services
         public void PauseJob(int jobId) => throw new NotImplementedException();
         public void ResumeJob(int jobId) => throw new NotImplementedException();
         public void CancelJob(int jobId) => throw new NotImplementedException();
-
+        public void SimulateGroupedJob() { }
+        
+      
         public void Dispose()
         {
             StopMonitoring();

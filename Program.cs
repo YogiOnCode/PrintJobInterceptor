@@ -10,6 +10,7 @@ namespace PrintJobInterceptor
 {
     internal static class Program
     {
+        private const bool IS_TEST_MODE = true;
         [System.STAThread]
         static void Main()
         {
@@ -31,7 +32,11 @@ namespace PrintJobInterceptor
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IPrintJobService, PrintJobService>();
+            if (IS_TEST_MODE) { services.AddSingleton<IPrintJobService, MockPrintJobService>(); }
+
+            else { services.AddSingleton<IPrintJobService, PrintJobService>(); }
+               
+            
             services.AddTransient<MainFormPresenter>();
             services.AddTransient<IMainFormView, MainForm>();
         }
