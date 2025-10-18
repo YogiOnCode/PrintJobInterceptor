@@ -2,11 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using PrintJobInterceptor.Core.Interfaces;
 using PrintJobInterceptor.Core.Services;
 using PrintJobInterceptor.Presentation;
-using PrintJobInterceptor.UI;
 using PrintJobInterceptor.UI.Interfaces;
 using System;
 using System.Windows.Forms;
-
 
 namespace PrintJobInterceptor
 {
@@ -19,19 +17,23 @@ namespace PrintJobInterceptor
             Application.SetCompatibleTextRenderingDefault(false);
 
             var services = new ServiceCollection();
-            ConfigureServices(services); // This method call needs the definition below
+            ConfigureServices(services);
             var serviceProvider = services.BuildServiceProvider();
 
-            var mainForm = ServiceProviderServiceExtensions.GetService<MainForm>(serviceProvider);
+            var mainForm = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions
+                                .GetRequiredService<IMainFormView>(serviceProvider) as Form;
+
+            if (mainForm == null)
+                throw new InvalidOperationException("IMainFormView resolve returned null or is not a Form.");
+
             Application.Run(mainForm);
         }
 
-        // This method was missing from your file
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IPrintJobService, PrintJobService>();
             services.AddTransient<MainFormPresenter>();
-            services.AddTransient<MainForm>();
+            services.AddTransient<IMainFormView, MainForm>();
         }
     }
 }

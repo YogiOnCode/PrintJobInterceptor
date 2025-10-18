@@ -1,60 +1,97 @@
 ﻿using PrintJobInterceptor.Core.Interfaces;
 using PrintJobInterceptor.Core.Models;
 using System;
+using System.Collections.Generic;
 using System.Management;
 
 namespace PrintJobInterceptor.Core.Services
 {
     public class PrintJobService : IPrintJobService, IDisposable
     {
-        private ManagementEventWatcher _watcher;
+        private ManagementEventWatcher _creationWatcher;
+        private ManagementEventWatcher _modificationWatcher;
+
+        private readonly Dictionary<int, PrintJob> _activeJobs = new Dictionary<int, PrintJob>();
+        private readonly object _lock = new object();
+
 
         public event Action<PrintJob> JobSpooling;
+        public event Action<PrintJob> JobUpdated;
 
         public PrintJobService()
         {
-          
-            var query = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_PrintJob'");
-            _watcher = new ManagementEventWatcher(query);
-            _watcher.EventArrived += Watcher_EventArrived;
+
+            var creationQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_PrintJob'");
+            _creationWatcher = new ManagementEventWatcher(creationQuery);
+            _creationWatcher.EventArrived += OnJobCreation;
+
+            var modificationQuery = new WqlEventQuery("SELECT * FROM __InstanceModificationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_PrintJob'");
+            _modificationWatcher = new ManagementEventWatcher(modificationQuery);
+            _modificationWatcher.EventArrived += OnJobModification;
+
+
         }
-
-        private void Watcher_EventArrived(object sender, EventArrivedEventArgs e)
+        private void OnJobCreation(object sender, EventArrivedEventArgs e)
         {
-           
             var targetInstance = e.NewEvent["TargetInstance"] as ManagementBaseObject;
+            if (targetInstance == null) return;
 
-            if (targetInstance != null)
+            var printJob = CreatePrintJobFromWmiObject(targetInstance);
+
+            lock (_lock)
             {
-                // Create our custom PrintJob object from the WMI data.
-                var printJob = new PrintJob
+                if (!_activeJobs.ContainsKey(printJob.JobId))
                 {
-                    JobId = Convert.ToInt32(targetInstance["JobId"]),
-                    DocumentName = targetInstance["Document"].ToString(),
-                    PrinterName = targetInstance["Name"].ToString().Split(',')[0],
-                    User = targetInstance["Owner"].ToString(),
-                    Status = targetInstance["JobStatus"]?.ToString() ?? "Unknown",
-                    PageCount = Convert.ToInt32(targetInstance["TotalPages"]),
-                    SizeInBytes = Convert.ToInt64(targetInstance["Size"]),
-                    SubmittedAt = ManagementDateTimeConverter.ToDateTime(targetInstance["TimeSubmitted"].ToString())
-                };
-
-               
-                JobSpooling?.Invoke(printJob);
+                    _activeJobs.Add(printJob.JobId, printJob);
+                }
             }
+            JobSpooling?.Invoke(printJob);
+        }
+        private void OnJobModification(object sender, EventArrivedEventArgs e)
+        {
+            var targetInstance = e.NewEvent["TargetInstance"] as ManagementBaseObject;
+            if (targetInstance == null) return;
+
+            var updatedJob = CreatePrintJobFromWmiObject(targetInstance);
+
+            lock (_lock)
+            {
+                if (_activeJobs.ContainsKey(updatedJob.JobId))
+                {
+                  
+                    _activeJobs[updatedJob.JobId] = updatedJob;
+                }
+            }
+            JobUpdated?.Invoke(updatedJob);
+        }
+        private PrintJob CreatePrintJobFromWmiObject(ManagementBaseObject wmiObject)
+        {
+            return new PrintJob
+            {
+                JobId = Convert.ToInt32(wmiObject["JobId"]),
+                DocumentName = wmiObject["Document"].ToString(),
+                PrinterName = wmiObject["Name"].ToString().Split(',')[0],
+                User = wmiObject["Owner"].ToString(),
+                Status = wmiObject["JobStatus"]?.ToString() ?? "Unknown",
+                PageCount = Convert.ToInt32(wmiObject["TotalPages"]),
+                SizeInBytes = Convert.ToUInt32(wmiObject["Size"]), // Note: Win32_PrintJob.Size is a UInt32
+                SubmittedAt = ManagementDateTimeConverter.ToDateTime(wmiObject["TimeSubmitted"].ToString())
+            };
         }
 
         public void StartMonitoring()
         {
-            _watcher.Start();
+            _creationWatcher.Start();
+            _modificationWatcher.Start();
         }
 
         public void StopMonitoring()
         {
-            _watcher.Stop();
+            _creationWatcher.Stop();
+            _modificationWatcher.Stop();
         }
 
-    
+
         public void PauseJob(int jobId) => throw new NotImplementedException();
         public void ResumeJob(int jobId) => throw new NotImplementedException();
         public void CancelJob(int jobId) => throw new NotImplementedException();
@@ -62,7 +99,8 @@ namespace PrintJobInterceptor.Core.Services
         public void Dispose()
         {
             StopMonitoring();
-            _watcher.Dispose();
+            _creationWatcher.Dispose();
+            _modificationWatcher.Dispose();
         }
     }
 }

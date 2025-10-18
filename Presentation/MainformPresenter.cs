@@ -10,26 +10,41 @@ namespace PrintJobInterceptor.Presentation
     {
         private readonly IMainFormView _view;
         private readonly IPrintJobService _printJobService;
-        private readonly List<PrintJob> _jobs;
+
+        private readonly Dictionary<int, PrintJob> _jobs;
+        private readonly object _lock = new object();
 
         public MainFormPresenter(IMainFormView view, IPrintJobService printJobService)
         {
             _view = view;
             _printJobService = printJobService;
-            _jobs = new List<PrintJob>();
-         
+            _jobs = new Dictionary<int, PrintJob>();
+
             _printJobService.JobSpooling += OnJobSpooling;
+            _printJobService.JobUpdated += OnJobUpdated;
         }
 
         private void OnJobSpooling(PrintJob newJob)
         {
-            
-            _jobs.Add(newJob);
 
-        
-            _view.DisplayJobs(_jobs.ToList());
+            UpdateAndRefresh(newJob);
+         
         }
+        private void UpdateAndRefresh(PrintJob job)
+        {
+            lock (_lock)
+            {
+               
+                _jobs[job.JobId] = job;
+            }
 
+          
+            _view.DisplayJobs(_jobs.Values.ToList());
+        }
+        private void OnJobUpdated(PrintJob updatedJob)
+        {
+            UpdateAndRefresh(updatedJob);
+        }
         public void Start()
         {
             _printJobService.StartMonitoring();

@@ -28,12 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            dgvPrintJobs = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgvPrintJobs).BeginInit();
+            SuspendLayout();
+            // 
+            // dgvPrintJobs
+            // 
+            dgvPrintJobs.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvPrintJobs.Dock = DockStyle.Fill;
+            dgvPrintJobs.Location = new Point(0, 0);
+            dgvPrintJobs.Name = "dgvPrintJobs";
+            dgvPrintJobs.RowHeadersWidth = 51;
+            dgvPrintJobs.Size = new Size(983, 600);
+            dgvPrintJobs.TabIndex = 0;
+            // 
+            // MainForm
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(983, 600);
+            Controls.Add(dgvPrintJobs);
+            Name = "MainForm";
+            Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)dgvPrintJobs).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private DataGridView dgvPrintJobs;
     }
 }
