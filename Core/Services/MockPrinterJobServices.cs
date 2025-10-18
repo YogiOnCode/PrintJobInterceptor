@@ -25,7 +25,7 @@ namespace PrintJobInterceptor.Core.Services
     {
         public event Action<PrintJob> JobSpooling;
         public event Action<PrintJob> JobUpdated;
-
+        public event Action<PrintJob> JobDeleted;
         private const int GROUPING_TIMEOUT_MS = 5000;
         private readonly Random _random = new Random();
 

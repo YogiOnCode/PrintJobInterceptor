@@ -10,6 +10,7 @@ namespace PrintJobInterceptor.Core.Services
     {
         private ManagementEventWatcher _creationWatcher;
         private ManagementEventWatcher _modificationWatcher;
+        private ManagementEventWatcher _deletionWatcher;
 
         private readonly Dictionary<int, PrintJob> _activeJobs = new Dictionary<int, PrintJob>();
         private readonly object _lock = new object();
@@ -17,6 +18,7 @@ namespace PrintJobInterceptor.Core.Services
 
         public event Action<PrintJob> JobSpooling;
         public event Action<PrintJob> JobUpdated;
+        public event Action<PrintJob> JobDeleted;
 
         public PrintJobService()
         {
@@ -29,7 +31,19 @@ namespace PrintJobInterceptor.Core.Services
             _modificationWatcher = new ManagementEventWatcher(modificationQuery);
             _modificationWatcher.EventArrived += OnJobModification;
 
+            var deletionQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_PrintJob'");
+            _deletionWatcher = new ManagementEventWatcher(deletionQuery);
+            _deletionWatcher.EventArrived += (s, e) => HandleEvent(e, JobDeleted);
 
+        }
+
+        private void HandleEvent(EventArrivedEventArgs e, Action<PrintJob> eventToRaise)
+        {
+            var targetInstance = e.NewEvent["TargetInstance"] as ManagementBaseObject;
+            if (targetInstance == null) return;
+
+            var printJob = CreatePrintJobFromWmiObject(targetInstance);
+            eventToRaise?.Invoke(printJob);
         }
 
         private void OnJobCreation(object sender, EventArrivedEventArgs e)
@@ -75,7 +89,7 @@ namespace PrintJobInterceptor.Core.Services
                 User = wmiObject["Owner"].ToString(),
                 Status = wmiObject["JobStatus"]?.ToString() ?? "Unknown",
                 PageCount = Convert.ToInt32(wmiObject["TotalPages"]),
-                SizeInBytes = Convert.ToUInt32(wmiObject["Size"]), // Note: Win32_PrintJob.Size is a UInt32
+                SizeInBytes = Convert.ToUInt32(wmiObject["Size"]), 
                 SubmittedAt = ManagementDateTimeConverter.ToDateTime(wmiObject["TimeSubmitted"].ToString())
             };
         }
@@ -84,12 +98,14 @@ namespace PrintJobInterceptor.Core.Services
         {
             _creationWatcher.Start();
             _modificationWatcher.Start();
+            _deletionWatcher.Start();
         }
 
         public void StopMonitoring()
         {
             _creationWatcher.Stop();
             _modificationWatcher.Stop();
+            _deletionWatcher.Stop();
         }
 
 
