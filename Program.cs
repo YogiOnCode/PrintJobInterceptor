@@ -1,17 +1,37 @@
+using Microsoft.Extensions.DependencyInjection;
+using PrintJobInterceptor.Core.Interfaces;
+using PrintJobInterceptor.Core.Services;
+using PrintJobInterceptor.Presentation;
+using PrintJobInterceptor.UI;
+using PrintJobInterceptor.UI.Interfaces;
+using System;
+using System.Windows.Forms;
+
+
 namespace PrintJobInterceptor
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
+        [System.STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new MainForm());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            var services = new ServiceCollection();
+            ConfigureServices(services); // This method call needs the definition below
+            var serviceProvider = services.BuildServiceProvider();
+
+            var mainForm = ServiceProviderServiceExtensions.GetService<MainForm>(serviceProvider);
+            Application.Run(mainForm);
+        }
+
+        // This method was missing from your file
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IPrintJobService, PrintJobService>();
+            services.AddTransient<MainFormPresenter>();
+            services.AddTransient<MainForm>();
         }
     }
 }
