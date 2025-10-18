@@ -1,6 +1,7 @@
 ﻿using PrintJobInterceptor.Core.Interfaces;
 using PrintJobInterceptor.Core.Models;
 using PrintJobInterceptor.UI.Interfaces;
+using System.Text.RegularExpressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,8 @@ namespace PrintJobInterceptor.Presentation
         private readonly IMainFormView _view;
         private readonly IPrintJobService _printJobService;
 
-        private readonly Dictionary<string, PrintJobGroup> _activeGroups = new Dictionary<string, PrintJobGroup>();
-        private readonly List<PrintJobGroup> _finalizedGroups = new List<PrintJobGroup>();
+        private readonly Dictionary<string, PrintJobGroup> _jobGroups = new Dictionary<string, PrintJobGroup>();
+
         private readonly object _lock = new object();
         private readonly System.Windows.Forms.Timer _uiRefreshTimer;
 
@@ -27,6 +28,7 @@ namespace PrintJobInterceptor.Presentation
         
             _printJobService.JobSpooling += OnJobReceived;
             _printJobService.JobUpdated += OnJobReceived;
+            _printJobService.JobDeleted += OnJobDeleted;
 
             _uiRefreshTimer = new System.Windows.Forms.Timer { Interval = 1000 };
             _uiRefreshTimer.Tick += UiRefreshTimer_Tick;
@@ -36,46 +38,89 @@ namespace PrintJobInterceptor.Presentation
         {
             lock (_lock)
             {
-                string groupKey = $"{job.User}|{job.DocumentName}".ToLower();
+                string baseDocName = GetBaseDocumentName(job.DocumentName);
+                string groupKey = $"{job.User}|{baseDocName}".ToLower();
 
-                if (_activeGroups.TryGetValue(groupKey, out var group))
+                if (_jobGroups.TryGetValue(groupKey, out var group))
                 {
-                 
+
                     var existingJob = group.Jobs.FirstOrDefault(j => j.JobId == job.JobId);
-                    if (existingJob != null) { group.Jobs.Remove(existingJob); }
-                    group.Jobs.Add(job);
-                    group.LastActivity = DateTime.Now;
+                    if (existingJob != null)
+                    {
+                        
+                        group.Jobs.Remove(existingJob);
+                        group.Jobs.Add(job);
+                    }
+                    else
+                    {
+                       
+                        group.Jobs.Add(job);
+                        group.LastActivity = DateTime.Now;
+                    }
                 }
                 else
                 {
-                   
+
                     var newGroup = new PrintJobGroup(groupKey);
                     newGroup.Jobs.Add(job);
-                    _activeGroups.Add(groupKey, newGroup);
+                    _jobGroups.Add(groupKey, newGroup);
                 }
             }
+        }
+        private void OnJobDeleted(PrintJob deletedJob)
+        {
+            lock (_lock)
+            {
+                string baseDocName = GetBaseDocumentName(deletedJob.DocumentName);
+                string groupKey = $"{deletedJob.User}|{baseDocName}".ToLower();
+
+                if (_jobGroups.TryGetValue(groupKey, out var group))
+                {
+                    var jobInGroup = group.Jobs.FirstOrDefault(j => j.JobId == deletedJob.JobId);
+                    if (jobInGroup != null)
+                    {
+                        jobInGroup.Status = "Completed";
+                    }
+                }
+            }
+        }
+        private string GetBaseDocumentName(string documentName)
+        {
+            
+            var match = Regex.Match(documentName, @"(.+?)_(\d+)(\..+)?$");
+            if (match.Success)
+            {
+                return match.Groups[1].Value + (match.Groups[3].Success ? match.Groups[3].Value : "");
+            }
+
+          
+            match = Regex.Match(documentName, @"(.+?)\s*\(Part\s*\d+(?:\s*of\s*\d+)?\)(\..+)?$");
+            if (match.Success)
+            {
+                return match.Groups[1].Value + (match.Groups[2].Success ? match.Groups[2].Value : "");
+            }
+
+            return documentName; 
         }
 
         private void UiRefreshTimer_Tick(object sender, EventArgs e)
         {
-            lock (_lock)
+            lock(_lock)
             {
               
-                var groupsToFinalize = _activeGroups.Values
-                    .Where(g => (DateTime.Now - g.LastActivity).TotalMilliseconds > GROUPING_TIMEOUT_MS)
+                var groupsToFinalize = _jobGroups.Values
+                    .Where(g => g.GroupingStatus == "Grouping" && (DateTime.Now - g.LastActivity).TotalMilliseconds > GROUPING_TIMEOUT_MS)
                     .ToList();
 
                 foreach (var group in groupsToFinalize)
                 {
+                 
                     group.GroupingStatus = "Finalized";
-                    _activeGroups.Remove(group.GroupKey);
-                    _finalizedGroups.Add(group);
                 }
             }
 
-           
-            var allGroups = _finalizedGroups.Concat(_activeGroups.Values).ToList();
-            _view.DisplayJobGroups(allGroups);
+          
+            _view.DisplayJobGroups(_jobGroups.Values.ToList());
         }
 
         public void Start()
