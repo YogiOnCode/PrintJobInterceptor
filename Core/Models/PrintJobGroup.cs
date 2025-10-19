@@ -13,7 +13,7 @@ namespace PrintJobInterceptor.Core.Models
         public string DocumentName => Jobs.FirstOrDefault()?.DocumentName ?? "Unknown";
         public string User => Jobs.FirstOrDefault()?.User ?? "Unknown";
         public string PrinterName => Jobs.FirstOrDefault()?.PrinterName ?? "Unknown";
-
+        public string DocumentType => Jobs.FirstOrDefault()?.DocumentType ?? "Unknown";
         public int TotalPages => Jobs.Sum(j => j.PageCount);
         public long TotalSizeInBytes => Jobs.Sum(j => j.SizeInBytes);
         public string GroupingStatus { get; set; } = "Grouping";

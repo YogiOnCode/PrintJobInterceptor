@@ -10,7 +10,7 @@ namespace PrintJobInterceptor
 {
     internal static class Program
     {
-        private const bool IS_TEST_MODE = false;
+        private const bool IS_TEST_MODE = true;
         [System.STAThread]
         static void Main()
         {

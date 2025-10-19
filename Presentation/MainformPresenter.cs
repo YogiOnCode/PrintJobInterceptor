@@ -6,6 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using System.Runtime.Intrinsics.X86;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace PrintJobInterceptor.Presentation
 {
@@ -32,6 +35,29 @@ namespace PrintJobInterceptor.Presentation
             _printJobService.JobDeleted += OnJobDeleted;
 
             _view.PrinterFilterChanged += OnPrinterFilterChanged;
+
+            _view.PauseJobRequested += (group) => {
+                if (group == null) return;
+                foreach (var job in group.Jobs.ToList())
+                {
+                    _printJobService.PauseJob(job.JobId, job.PrinterName);
+                }
+            };
+            _view.ResumeJobRequested += (group) => {
+                if (group == null) return;
+                foreach (var job in group.Jobs.ToList())
+                {
+                    _printJobService.ResumeJob(job.JobId, job.PrinterName);
+                }
+            };
+            _view.CancelJobRequested += (group) => {
+                if (group == null) return;
+                foreach (var job in group.Jobs.ToList())
+                {
+                    _printJobService.CancelJob(job.JobId, job.PrinterName);
+                }
+            };
+
 
             _uiRefreshTimer = new System.Windows.Forms.Timer { Interval = 1000 };
             _uiRefreshTimer.Tick += UiRefreshTimer_Tick;
@@ -66,54 +92,63 @@ namespace PrintJobInterceptor.Presentation
 
         private void OnJobReceived(PrintJob job)
         {
+            PrintJobGroup group = null;
             lock (_lock)
             {
                 string baseDocName = GetBaseDocumentName(job.DocumentName);
                 string groupKey = $"{job.User}|{baseDocName}".ToLower();
+               
 
-                if (!_jobGroups.TryGetValue(groupKey, out var group))
+                if (_jobGroups.TryGetValue(groupKey, out var existingGroup) && existingGroup.GroupingStatus == "Grouping")
+                {
+                   
+                    group = existingGroup;
+                }
+                else
                 {
                    
                     group = new PrintJobGroup(groupKey);
-                    _jobGroups.Add(groupKey, group);
+                    _jobGroups[groupKey] = group;
                 }
 
-                var existingJob = group.Jobs.FirstOrDefault(j => j.JobId == job.JobId);
-
-                if (existingJob != null)
+                var existingJobInGroup = group.Jobs.FirstOrDefault(j => j.JobId == job.JobId);
+                if (existingJobInGroup != null)
                 {
-                 
-                    group.Jobs.Remove(existingJob);
+                  
+                    group.Jobs.Remove(existingJobInGroup);
                     group.Jobs.Add(job);
                 }
                 else
                 {
-                    
+                  
                     group.Jobs.Add(job);
-                    group.LastActivity = DateTime.Now;        
-                    group.GroupingStatus = "Grouping";        
                 }
+
+                
+                group.LastActivity = DateTime.Now;
+                group.GroupingStatus = "Grouping";
             }
 
-
+            CheckAndArchiveIfTerminal(group);
             ApplyFilters();
         }
 
         private void OnJobDeleted(PrintJob deletedJob)
         {
+            PrintJobGroup group = null;
             lock (_lock)
             {
                 string baseDocName = GetBaseDocumentName(deletedJob.DocumentName);
                 string groupKey = $"{deletedJob.User}|{baseDocName}".ToLower();
 
-                if (_jobGroups.TryGetValue(groupKey, out var group))
+                if (_jobGroups.TryGetValue(groupKey, out group))
                 {
                     var jobInGroup = group.Jobs.FirstOrDefault(j => j.JobId == deletedJob.JobId);
                     if (jobInGroup != null)
                         jobInGroup.Status = "Completed";
                 }
             }
-
+            CheckAndArchiveIfTerminal(group);
             ApplyFilters();
         }
 
@@ -130,8 +165,8 @@ namespace PrintJobInterceptor.Presentation
 
             return documentName;
         }
+        
 
-      
         private void UiRefreshTimer_Tick(object sender, EventArgs e)
         {
             bool needsUiRefresh = false;
@@ -171,7 +206,44 @@ namespace PrintJobInterceptor.Presentation
                 ApplyFilters();
         }
 
-       
+        #region HistoryJson
+        private void ArchiveGroup(PrintJobGroup group)
+        {
+            try
+            {
+               
+                string historyDir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "PrintJobInterceptor");
+
+                Directory.CreateDirectory(historyDir); 
+                string historyFile = Path.Combine(historyDir, "history.jsonl");
+
+                string json = JsonConvert.SerializeObject(group);
+
+                
+                File.AppendAllText(historyFile, json + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to archive job group: {ex.Message}");
+            }
+        }
+        private void CheckAndArchiveIfTerminal(PrintJobGroup group)
+        {
+            if (group == null) return;
+
+            bool isTerminal = group.Status == "Finished" ||
+                              group.Status == "Error" ||
+                              group.Status.Contains("Cancel");
+
+            if (isTerminal)
+            {
+                ArchiveGroup(group);
+                _jobGroups.Remove(group.GroupKey);
+            }
+        }
+        #endregion
         public void Start()
         {
             _printJobService.StartMonitoring();
