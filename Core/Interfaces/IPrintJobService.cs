@@ -15,8 +15,9 @@ namespace PrintJobInterceptor.Core.Interfaces
 
         void StartMonitoring();
         void StopMonitoring();
-        void PauseJob(int jobId);
-        void ResumeJob(int jobId);
-        void CancelJob(int jobId);
+        void PauseJob(int jobId, string printerName);
+        void ResumeJob(int jobId, string printerName);
+        void CancelJob(int jobId, string printerName);
+      
     }
 }

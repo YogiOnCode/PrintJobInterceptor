@@ -13,8 +13,8 @@ namespace PrintJobInterceptor.UI.Interfaces
         void DisplayJobGroups(IEnumerable<PrintJobGroup> groups);
         void ShowNotification(string message, FeedbackType type);
 
-        event Action<int> PauseJobRequested;
-        event Action<int> ResumeJobRequested;
-        event Action<int> CancelJobRequested;
+        event Action<PrintJobGroup> PauseJobRequested;
+        event Action<PrintJobGroup> ResumeJobRequested;
+        event Action<PrintJobGroup> CancelJobRequested;
     }
 }

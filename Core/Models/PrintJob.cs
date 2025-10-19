@@ -15,6 +15,7 @@ namespace PrintJobInterceptor.Core.Models
         public string Status { get; set; }
         public int PageCount { get; set; }
         public DateTime SubmittedAt { get; set; }
+        public string DocumentType { get; set; }
         public long SizeInBytes { get; set; }
     }
 }
