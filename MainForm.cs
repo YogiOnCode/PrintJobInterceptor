@@ -129,6 +129,8 @@ namespace PrintJobInterceptor
            
             if (status.Equals("Finished", StringComparison.OrdinalIgnoreCase) || status.Contains("Completed"))
             {
+              
+              
                 iconStatus.IconColor = Color.FromArgb(0, 192, 0); 
             }
             else if (status.Contains("Error"))

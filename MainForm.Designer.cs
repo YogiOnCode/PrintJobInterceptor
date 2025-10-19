@@ -510,9 +510,9 @@
             // 
             iconStatus.BackColor = Color.FromArgb(36, 36, 36);
             iconStatus.Dock = DockStyle.Fill;
-            iconStatus.ForeColor = Color.Yellow;
+            iconStatus.ForeColor = Color.Transparent;
             iconStatus.IconChar = FontAwesome.Sharp.IconChar.Circle;
-            iconStatus.IconColor = Color.Yellow;
+            iconStatus.IconColor = Color.Transparent;
             iconStatus.IconFont = FontAwesome.Sharp.IconFont.Solid;
             iconStatus.IconSize = 17;
             iconStatus.Location = new Point(119, 3);
