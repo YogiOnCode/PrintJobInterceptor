@@ -42,6 +42,7 @@ namespace PrintJobInterceptor.Presentation
                 {
                     _printJobService.PauseJob(job.JobId, job.PrinterName);
                 }
+                ApplyFilters();
             };
             _view.ResumeJobRequested += (group) => {
                 if (group == null) return;
@@ -49,6 +50,7 @@ namespace PrintJobInterceptor.Presentation
                 {
                     _printJobService.ResumeJob(job.JobId, job.PrinterName);
                 }
+                ApplyFilters();
             };
             _view.CancelJobRequested += (group) => {
                 if (group == null) return;

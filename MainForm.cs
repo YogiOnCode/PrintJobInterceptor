@@ -10,6 +10,7 @@ using PrintJobInterceptor.Core.Interfaces;
 using System.Drawing.Printing;
 using Newtonsoft.Json;
 using static SiticoneNetCoreUI.SiticoneDropdown;
+using System.Text;
 
 namespace PrintJobInterceptor
 {
@@ -23,14 +24,13 @@ namespace PrintJobInterceptor
 
         public event Action<List<string>> PrinterFilterChanged;
         private readonly HashSet<string> _selectedPrinters = new HashSet<string>();
-        private List<string> SelectedPrintersList => _selectedPrinters.ToList();
         public MainForm(IPrintJobService printJobService)
         {
             InitializeComponent();
             SetupDataGridView(dgvPrintJobs);
-            SetupDataGridView(dgvHistoryJobs);
+            SetupHistoryDataGridView(dgvHistoryJobs);
             SetDoubleBuffering(dgvHistoryJobs, true);
-
+           
             _presenter = new MainFormPresenter(this, printJobService);
 
             this.Text = string.Empty;
@@ -44,20 +44,13 @@ namespace PrintJobInterceptor
             this.buttonResume.Click += (s, e) => ResumeJobRequested?.Invoke(GetSelectedJobGroup());
             this.buttonCancel.Click += (s, e) => CancelJobRequested?.Invoke(GetSelectedJobGroup());
 
-            this.btnClose.Click += BtnClose_Click;
-            this.btnMinimize.Click += BtnMinimize_Click;
-            this.panelTitleBar.MouseDown += PanelTitleBar_MouseDown;
-            this.panelTitleBar.MouseMove += PanelTitleBar_MouseMove;
-            this.panelTitleBar.MouseUp += PanelTitleBar_MouseUp;
-            //this.dropDownPrinters.SelectedIndexChanged += DropDownPrinters_SelectedIndexChanged;
-            tabControlContent.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
-            this.btnRefresh.Click += BtnRefresh_Click;
-            this.dropDownPrinters.ItemsSelected += DropDownPrinters_ItemsSelected;
-            this.dropDownPrinters.AfterDropdownClose += DropDownPrinters_AfterDropdownClose;
-
-
+           
+            IntializeWireEvents();
         }
+
        
+
+
         #region Title Bar and Form Events
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -96,7 +89,7 @@ namespace PrintJobInterceptor
                 _selectedGroup = selectedGroup;
 
 
-                lblDetailsHeader.Text = selectedGroup.GroupKey;
+                lblDetailsHeader.Text = selectedGroup.User;
 
 
                 lblDetailsGlobalStatus.Text = $"Status: {selectedGroup.Status}";
@@ -107,16 +100,23 @@ namespace PrintJobInterceptor
 
                 lblDetailsJobCount.Text = $"Job Count: {selectedGroup.JobCount}";
 
+                UpdateStatusIconColor(selectedGroup.Status);
 
-                lbxIndividualJobs.Items.Clear();
-                foreach (var job in selectedGroup.Jobs)
+                StringBuilder jobNamesBuilder = new StringBuilder();
+
+            
+                jobNamesBuilder.AppendLine("Job Document Names:");
+
+               
+                foreach (var job in selectedGroup.Jobs.OrderBy(j => j.JobId))
                 {
-
-                    lbxIndividualJobs.Items.Add(job.DocumentName);
+                   
+                    jobNamesBuilder.AppendLine($"{job.DocumentName}" +
+                        $"\n | Status: {job.Status}");
                 }
+                lblIndividualJobNames.Text = jobNamesBuilder.ToString();
 
-
-                panelContent.Visible = true;
+                panelDetails.Visible = true;
             }
             else
             {
@@ -124,10 +124,28 @@ namespace PrintJobInterceptor
                 panelDetails.Visible = false;
             }
         }
-        private int GetSelectedJobId()
+        private void UpdateStatusIconColor(string status)
         {
+           
+            if (status.Equals("Finished", StringComparison.OrdinalIgnoreCase) || status.Contains("Completed"))
+            {
+                iconStatus.IconColor = Color.FromArgb(0, 192, 0); 
+            }
+            else if (status.Contains("Error"))
+            {
 
-            return _selectedGroup?.Jobs.FirstOrDefault()?.JobId ?? 0;
+                iconStatus.IconColor = Color.Red;
+            }
+            else if (status.Contains("Paused") || status.Contains("Cancel") || status.Contains("Deleting"))
+            {
+
+                iconStatus.IconColor = Color.FromArgb(255, 128, 0);
+            }
+            else
+            {
+
+                iconStatus.IconColor = Color.FromArgb(0, 192, 192); 
+            }
         }
 
         public void DisplayJobGroups(IEnumerable<PrintJobGroup> groups)
@@ -141,6 +159,17 @@ namespace PrintJobInterceptor
             string selectedGroupKey = (dgvPrintJobs.CurrentRow?.DataBoundItem as PrintJobGroup)?.GroupKey;
 
             var groupList = groups.ToList();
+            if (groupList.Count == 0)
+            {
+                dgvPrintJobs.DataSource = groupList; 
+                dgvPrintJobs.ClearSelection();
+                panelDetails.Visible = false;
+                if (lblIndividualJobNames != null)
+                {
+                    lblIndividualJobNames.Text = string.Empty;
+                }
+                return; 
+            }
             dgvPrintJobs.DataSource = groupList;
 
             if (selectedGroupKey != null)
@@ -183,7 +212,7 @@ namespace PrintJobInterceptor
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-            if (tabControlContent.SelectedTab == historyTab) // Assuming your history tab page is named historyTab
+            if (tabControlContent.SelectedTab == historyTab) 
             {
                 LoadHistory();
             }
@@ -296,6 +325,20 @@ namespace PrintJobInterceptor
         }
         #endregion
         #region UI
+        private void IntializeWireEvents()
+        {
+            this.btnClose.Click += BtnClose_Click;
+            this.btnMinimize.Click += BtnMinimize_Click;
+            this.panelTitleBar.MouseDown += PanelTitleBar_MouseDown;
+            this.panelTitleBar.MouseMove += PanelTitleBar_MouseMove;
+            this.panelTitleBar.MouseUp += PanelTitleBar_MouseUp;
+            tabControlContent.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
+            this.btnRefresh.Click += BtnRefresh_Click;
+            this.dropDownPrinters.ItemsSelected += DropDownPrinters_ItemsSelected;
+            this.dropDownPrinters.AfterDropdownClose += DropDownPrinters_AfterDropdownClose;
+
+        }
+
         private void SetupDataGridView(DataGridView dgv)
         {
             dgvPrintJobs.AutoGenerateColumns = false;
@@ -392,6 +435,44 @@ namespace PrintJobInterceptor
             dgvPrintJobs.AllowUserToResizeRows = false;
             dgvPrintJobs.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.False;
             dgvPrintJobs.RowTemplate.Height = 35;
+        }
+        private void SetupHistoryDataGridView(DataGridView dgv)
+        {
+          
+            dgv.Columns.Clear();
+
+            
+            dgv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Printer",
+                DataPropertyName = "PrinterName",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
+            });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "User",
+                DataPropertyName = "User"
+            });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Document Name",
+                DataPropertyName = "DocumentName",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Status",
+                DataPropertyName = "Status"
+            });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Last Activity",
+                DataPropertyName = "LastActivity",
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "g" }
+            });
+
+            
+            StyleDataGridView(dgv);
         }
         public static void SetDoubleBuffering(System.Windows.Forms.Control control, bool value)
         {

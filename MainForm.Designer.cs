@@ -40,7 +40,6 @@
             MainSplitContainer = new SplitContainer();
             contentSplitContainer1 = new SplitContainer();
             panelPrinters = new Panel();
-            siticonePanel1 = new SiticoneNetCoreUI.SiticonePanel();
             dropDownPrinters = new SiticoneNetCoreUI.SiticoneDropdown();
             tabControlContent = new SiticoneNetCoreUI.SiticoneTabControl();
             activeTab = new TabPage();
@@ -50,16 +49,19 @@
             dgvHistoryJobs = new DataGridView();
             btnRefresh = new FontAwesome.Sharp.IconButton();
             detailsSplitContainer = new SplitContainer();
-            panelDetails = new Panel();
-            lbxIndividualJobs = new ListView();
+            panelDetails = new SiticoneNetCoreUI.SiticonePanel();
+            tableLayoutPanel3 = new TableLayoutPanel();
+            lblDetailsGlobalStatus = new Label();
+            iconStatus = new FontAwesome.Sharp.IconPictureBox();
+            lblIndividualJobNames = new Label();
             lblDetailsJobCount = new Label();
             lblDetailsGroupingStatus = new Label();
-            lblDetailsGlobalStatus = new Label();
             lblDetailsHeader = new Label();
             pnlButtons = new Panel();
             buttonCancel = new SiticoneNetCoreUI.SiticoneButton();
             buttonPause = new SiticoneNetCoreUI.SiticoneButton();
             buttonResume = new SiticoneNetCoreUI.SiticoneButton();
+            label2 = new Label();
             tableLayoutPanelMain.SuspendLayout();
             panelTitleBar.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -85,6 +87,8 @@
             detailsSplitContainer.Panel2.SuspendLayout();
             detailsSplitContainer.SuspendLayout();
             panelDetails.SuspendLayout();
+            tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)iconStatus).BeginInit();
             pnlButtons.SuspendLayout();
             SuspendLayout();
             // 
@@ -94,6 +98,7 @@
             tableLayoutPanelMain.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanelMain.Controls.Add(panelTitleBar, 0, 0);
             tableLayoutPanelMain.Controls.Add(panelContent, 0, 1);
+            tableLayoutPanelMain.Controls.Add(label2, 0, 2);
             tableLayoutPanelMain.Dock = DockStyle.Fill;
             tableLayoutPanelMain.Location = new Point(0, 0);
             tableLayoutPanelMain.Name = "tableLayoutPanelMain";
@@ -240,60 +245,12 @@
             // panelPrinters
             // 
             panelPrinters.BackColor = Color.FromArgb(34, 34, 34);
-            panelPrinters.Controls.Add(siticonePanel1);
             panelPrinters.Controls.Add(dropDownPrinters);
             panelPrinters.Dock = DockStyle.Fill;
             panelPrinters.Location = new Point(0, 0);
             panelPrinters.Name = "panelPrinters";
             panelPrinters.Size = new Size(233, 683);
             panelPrinters.TabIndex = 0;
-            // 
-            // siticonePanel1
-            // 
-            siticonePanel1.AcrylicTintColor = Color.FromArgb(128, 255, 255, 255);
-            siticonePanel1.BackColor = Color.Transparent;
-            siticonePanel1.BorderAlignment = System.Drawing.Drawing2D.PenAlignment.Center;
-            siticonePanel1.BorderDashPattern = null;
-            siticonePanel1.BorderGradientEndColor = Color.Purple;
-            siticonePanel1.BorderGradientStartColor = Color.Blue;
-            siticonePanel1.BorderThickness = 2F;
-            siticonePanel1.CornerRadiusBottomLeft = 10F;
-            siticonePanel1.CornerRadiusBottomRight = 10F;
-            siticonePanel1.CornerRadiusTopLeft = 10F;
-            siticonePanel1.CornerRadiusTopRight = 10F;
-            siticonePanel1.EnableAcrylicEffect = false;
-            siticonePanel1.EnableMicaEffect = false;
-            siticonePanel1.EnableRippleEffect = false;
-            siticonePanel1.FillColor = Color.White;
-            siticonePanel1.GradientColors = new Color[]
-    {
-    Color.White,
-    Color.LightGray,
-    Color.Gray
-    };
-            siticonePanel1.GradientPositions = new float[]
-    {
-    0F,
-    0.5F,
-    1F
-    };
-            siticonePanel1.Location = new Point(14, 165);
-            siticonePanel1.Name = "siticonePanel1";
-            siticonePanel1.PatternStyle = System.Drawing.Drawing2D.HatchStyle.Max;
-            siticonePanel1.RippleAlpha = 50;
-            siticonePanel1.RippleAlphaDecrement = 3;
-            siticonePanel1.RippleColor = Color.FromArgb(50, 255, 255, 255);
-            siticonePanel1.RippleMaxSize = 600F;
-            siticonePanel1.RippleSpeed = 15F;
-            siticonePanel1.ShowBorder = true;
-            siticonePanel1.Size = new Size(122, 109);
-            siticonePanel1.TabIndex = 1;
-            siticonePanel1.TabStop = true;
-            siticonePanel1.TrackSystemTheme = false;
-            siticonePanel1.UseBorderGradient = false;
-            siticonePanel1.UseMultiGradient = false;
-            siticonePanel1.UsePatternTexture = false;
-            siticonePanel1.UseRadialGradient = false;
             // 
             // dropDownPrinters
             // 
@@ -474,77 +431,135 @@
             // 
             // panelDetails
             // 
-            panelDetails.Controls.Add(lbxIndividualJobs);
+            panelDetails.AcrylicTintColor = Color.FromArgb(128, 255, 255, 255);
+            panelDetails.BackColor = Color.FromArgb(36, 36, 36);
+            panelDetails.BorderAlignment = System.Drawing.Drawing2D.PenAlignment.Center;
+            panelDetails.BorderDashPattern = null;
+            panelDetails.BorderGradientEndColor = Color.Purple;
+            panelDetails.BorderGradientStartColor = Color.Blue;
+            panelDetails.BorderThickness = 2F;
+            panelDetails.Controls.Add(tableLayoutPanel3);
+            panelDetails.Controls.Add(lblIndividualJobNames);
             panelDetails.Controls.Add(lblDetailsJobCount);
             panelDetails.Controls.Add(lblDetailsGroupingStatus);
-            panelDetails.Controls.Add(lblDetailsGlobalStatus);
             panelDetails.Controls.Add(lblDetailsHeader);
-            panelDetails.Dock = DockStyle.Fill;
-            panelDetails.Location = new Point(0, 0);
+            panelDetails.CornerRadiusBottomLeft = 10F;
+            panelDetails.CornerRadiusBottomRight = 10F;
+            panelDetails.CornerRadiusTopLeft = 10F;
+            panelDetails.CornerRadiusTopRight = 10F;
+            panelDetails.EnableAcrylicEffect = false;
+            panelDetails.EnableMicaEffect = true;
+            panelDetails.EnableRippleEffect = false;
+            panelDetails.FillColor = Color.FromArgb(36, 36, 36);
+            panelDetails.GradientColors = new Color[]
+    {
+    Color.White,
+    Color.LightGray,
+    Color.Gray
+    };
+            panelDetails.GradientPositions = new float[]
+    {
+    0F,
+    0.5F,
+    1F
+    };
+            panelDetails.Location = new Point(6, 31);
             panelDetails.Name = "panelDetails";
-            panelDetails.Size = new Size(207, 468);
-            panelDetails.TabIndex = 0;
+            panelDetails.PatternStyle = System.Drawing.Drawing2D.HatchStyle.Max;
+            panelDetails.RippleAlpha = 50;
+            panelDetails.RippleAlphaDecrement = 3;
+            panelDetails.RippleColor = Color.FromArgb(50, 255, 255, 255);
+            panelDetails.RippleMaxSize = 600F;
+            panelDetails.RippleSpeed = 15F;
+            panelDetails.ShowBorder = true;
+            panelDetails.Size = new Size(189, 388);
+            panelDetails.TabIndex = 1;
+            panelDetails.TabStop = true;
+            panelDetails.TrackSystemTheme = false;
+            panelDetails.UseBorderGradient = false;
+            panelDetails.UseMultiGradient = false;
+            panelDetails.UsePatternTexture = false;
+            panelDetails.UseRadialGradient = false;
             // 
-            // lbxIndividualJobs
+            // tableLayoutPanel3
             // 
-            lbxIndividualJobs.BackColor = Color.FromArgb(32, 32, 32);
-            lbxIndividualJobs.BorderStyle = BorderStyle.None;
-            lbxIndividualJobs.Dock = DockStyle.Bottom;
-            lbxIndividualJobs.Font = new Font("Segoe UI Variable Small", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            lbxIndividualJobs.ForeColor = Color.White;
-            lbxIndividualJobs.GridLines = true;
-            lbxIndividualJobs.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            lbxIndividualJobs.Location = new Point(0, 319);
-            lbxIndividualJobs.Name = "lbxIndividualJobs";
-            lbxIndividualJobs.ShowItemToolTips = true;
-            lbxIndividualJobs.Size = new Size(207, 149);
-            lbxIndividualJobs.TabIndex = 4;
-            lbxIndividualJobs.UseCompatibleStateImageBehavior = false;
-            lbxIndividualJobs.View = View.List;
-            // 
-            // lblDetailsJobCount
-            // 
-            lblDetailsJobCount.AutoSize = true;
-            lblDetailsJobCount.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            lblDetailsJobCount.ForeColor = Color.White;
-            lblDetailsJobCount.Location = new Point(25, 214);
-            lblDetailsJobCount.Name = "lblDetailsJobCount";
-            lblDetailsJobCount.Size = new Size(50, 20);
-            lblDetailsJobCount.TabIndex = 3;
-            lblDetailsJobCount.Text = "label2";
-            // 
-            // lblDetailsGroupingStatus
-            // 
-            lblDetailsGroupingStatus.AutoSize = true;
-            lblDetailsGroupingStatus.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            lblDetailsGroupingStatus.ForeColor = Color.White;
-            lblDetailsGroupingStatus.Location = new Point(25, 161);
-            lblDetailsGroupingStatus.Name = "lblDetailsGroupingStatus";
-            lblDetailsGroupingStatus.Size = new Size(50, 20);
-            lblDetailsGroupingStatus.TabIndex = 2;
-            lblDetailsGroupingStatus.Text = "label2";
+            tableLayoutPanel3.ColumnCount = 2;
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 23F));
+            tableLayoutPanel3.Controls.Add(lblDetailsGlobalStatus, 0, 0);
+            tableLayoutPanel3.Controls.Add(iconStatus, 1, 0);
+            tableLayoutPanel3.Location = new Point(14, 81);
+            tableLayoutPanel3.Name = "tableLayoutPanel3";
+            tableLayoutPanel3.RowCount = 1;
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.Size = new Size(139, 24);
+            tableLayoutPanel3.TabIndex = 6;
             // 
             // lblDetailsGlobalStatus
             // 
             lblDetailsGlobalStatus.AutoSize = true;
-            lblDetailsGlobalStatus.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            lblDetailsGlobalStatus.Dock = DockStyle.Fill;
+            lblDetailsGlobalStatus.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
             lblDetailsGlobalStatus.ForeColor = Color.White;
-            lblDetailsGlobalStatus.Location = new Point(25, 101);
+            lblDetailsGlobalStatus.Location = new Point(3, 0);
             lblDetailsGlobalStatus.Name = "lblDetailsGlobalStatus";
-            lblDetailsGlobalStatus.Size = new Size(50, 20);
+            lblDetailsGlobalStatus.Size = new Size(110, 24);
             lblDetailsGlobalStatus.TabIndex = 1;
-            lblDetailsGlobalStatus.Text = "label2";
+            // 
+            // iconStatus
+            // 
+            iconStatus.BackColor = Color.FromArgb(36, 36, 36);
+            iconStatus.Dock = DockStyle.Fill;
+            iconStatus.ForeColor = Color.Yellow;
+            iconStatus.IconChar = FontAwesome.Sharp.IconChar.Circle;
+            iconStatus.IconColor = Color.Yellow;
+            iconStatus.IconFont = FontAwesome.Sharp.IconFont.Solid;
+            iconStatus.IconSize = 17;
+            iconStatus.Location = new Point(119, 3);
+            iconStatus.Name = "iconStatus";
+            iconStatus.Size = new Size(17, 18);
+            iconStatus.TabIndex = 2;
+            iconStatus.TabStop = false;
+            // 
+            // lblIndividualJobNames
+            // 
+            lblIndividualJobNames.AutoSize = true;
+            lblIndividualJobNames.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
+            lblIndividualJobNames.ForeColor = Color.White;
+            lblIndividualJobNames.Location = new Point(14, 224);
+            lblIndividualJobNames.Name = "lblIndividualJobNames";
+            lblIndividualJobNames.Size = new Size(0, 17);
+            lblIndividualJobNames.TabIndex = 5;
+            // 
+            // lblDetailsJobCount
+            // 
+            lblDetailsJobCount.AutoSize = true;
+            lblDetailsJobCount.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
+            lblDetailsJobCount.ForeColor = Color.White;
+            lblDetailsJobCount.Location = new Point(14, 179);
+            lblDetailsJobCount.Name = "lblDetailsJobCount";
+            lblDetailsJobCount.Size = new Size(0, 17);
+            lblDetailsJobCount.TabIndex = 3;
+            // 
+            // lblDetailsGroupingStatus
+            // 
+            lblDetailsGroupingStatus.AutoSize = true;
+            lblDetailsGroupingStatus.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
+            lblDetailsGroupingStatus.ForeColor = Color.White;
+            lblDetailsGroupingStatus.Location = new Point(14, 130);
+            lblDetailsGroupingStatus.Name = "lblDetailsGroupingStatus";
+            lblDetailsGroupingStatus.Size = new Size(0, 17);
+            lblDetailsGroupingStatus.TabIndex = 2;
             // 
             // lblDetailsHeader
             // 
             lblDetailsHeader.AutoSize = true;
-            lblDetailsHeader.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            lblDetailsHeader.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 238);
             lblDetailsHeader.ForeColor = Color.White;
-            lblDetailsHeader.Location = new Point(25, 52);
+            lblDetailsHeader.Location = new Point(14, 36);
             lblDetailsHeader.Name = "lblDetailsHeader";
-            lblDetailsHeader.Size = new Size(50, 20);
+            lblDetailsHeader.Size = new Size(0, 17);
             lblDetailsHeader.TabIndex = 0;
-            lblDetailsHeader.Text = "label2";
             // 
             // pnlButtons
             // 
@@ -785,6 +800,18 @@
             buttonResume.UseAdvancedRendering = true;
             buttonResume.UseParticles = false;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Dock = DockStyle.Right;
+            label2.ForeColor = Color.White;
+            label2.Location = new Point(1118, 731);
+            label2.Name = "label2";
+            label2.Size = new Size(63, 30);
+            label2.TabIndex = 4;
+            label2.Text = "Version 1.0";
+            label2.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -800,6 +827,7 @@
             Name = "MainForm";
             Text = "Form1";
             tableLayoutPanelMain.ResumeLayout(false);
+            tableLayoutPanelMain.PerformLayout();
             panelTitleBar.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -826,6 +854,9 @@
             detailsSplitContainer.ResumeLayout(false);
             panelDetails.ResumeLayout(false);
             panelDetails.PerformLayout();
+            tableLayoutPanel3.ResumeLayout(false);
+            tableLayoutPanel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)iconStatus).EndInit();
             pnlButtons.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -856,15 +887,17 @@
         private TableLayoutPanel tableLayoutPanel2;
         private FontAwesome.Sharp.IconButton btnRefresh;
         private Panel pnlButtons;
-        private Panel panelDetails;
         private Label label5;
         private Label label4;
         private Label label3;
-        private Label lblDetailsHeader;
-        private ListView lbxIndividualJobs;
+        private SiticoneNetCoreUI.SiticonePanel panelDetails;
         private Label lblDetailsJobCount;
         private Label lblDetailsGroupingStatus;
+        private Label lblDetailsHeader;
         private Label lblDetailsGlobalStatus;
-        private SiticoneNetCoreUI.SiticonePanel siticonePanel1;
+        private Label lblIndividualJobNames;
+        private TableLayoutPanel tableLayoutPanel3;
+        private FontAwesome.Sharp.IconPictureBox iconStatus;
+        private Label label2;
     }
 }
