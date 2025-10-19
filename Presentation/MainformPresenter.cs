@@ -19,6 +19,8 @@ namespace PrintJobInterceptor.Presentation
         private readonly object _lock = new();
         private readonly System.Windows.Forms.Timer _uiRefreshTimer;
 
+        private List<PrintJobGroup> _allJobGroups = new List<PrintJobGroup>(); 
+        private string _currentPrinterFilter = "All Printers";
         public MainFormPresenter(IMainFormView view, IPrintJobService printJobService)
         {
             _view = view;
@@ -29,12 +31,39 @@ namespace PrintJobInterceptor.Presentation
             _printJobService.JobUpdated += OnJobReceived;
             _printJobService.JobDeleted += OnJobDeleted;
 
-         
+            _view.PrinterFilterChanged += OnPrinterFilterChanged;
+
             _uiRefreshTimer = new System.Windows.Forms.Timer { Interval = 1000 };
             _uiRefreshTimer.Tick += UiRefreshTimer_Tick;
         }
 
-       
+        private void OnPrinterFilterChanged(string selectedPrinter)
+        {
+            _currentPrinterFilter = selectedPrinter;
+            ApplyFilters();
+        }
+        private void ApplyFilters()
+        {
+            List<PrintJobGroup> filteredGroups;
+            lock (_lock)
+            {
+                var allGroups = _jobGroups.Values.ToList();
+                if (string.IsNullOrEmpty(_currentPrinterFilter) || _currentPrinterFilter == "All Printers")
+                {
+                    filteredGroups = allGroups; 
+                }
+                else
+                {
+                    
+                    filteredGroups = allGroups
+                        .Where(g => g.PrinterName.Equals(_currentPrinterFilter, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+            }
+
+            _view.DisplayJobGroups(filteredGroups);
+        }
+
         private void OnJobReceived(PrintJob job)
         {
             lock (_lock)
@@ -66,8 +95,8 @@ namespace PrintJobInterceptor.Presentation
                 }
             }
 
-      
-            _view.DisplayJobGroups(_jobGroups.Values.ToList());
+
+            ApplyFilters();
         }
 
         private void OnJobDeleted(PrintJob deletedJob)
@@ -85,7 +114,7 @@ namespace PrintJobInterceptor.Presentation
                 }
             }
 
-            _view.DisplayJobGroups(_jobGroups.Values.ToList());
+            ApplyFilters();
         }
 
         private string GetBaseDocumentName(string documentName)
@@ -139,7 +168,7 @@ namespace PrintJobInterceptor.Presentation
             }
 
             if (needsUiRefresh)
-                _view.DisplayJobGroups(_jobGroups.Values.ToList());
+                ApplyFilters();
         }
 
        
@@ -147,6 +176,11 @@ namespace PrintJobInterceptor.Presentation
         {
             _printJobService.StartMonitoring();
             _uiRefreshTimer.Start();
+        }
+        public void Stop()
+        {
+            _uiRefreshTimer.Stop();
+            _printJobService.StopMonitoring();
         }
     }
 }
