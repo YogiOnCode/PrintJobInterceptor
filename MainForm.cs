@@ -1,16 +1,11 @@
+using System.Text;
+using Newtonsoft.Json;
+using PrintJobInterceptor.Core.Interfaces;
+using PrintJobInterceptor.Core.Models;
 using PrintJobInterceptor.Presentation;
 using PrintJobInterceptor.UI.Helpers;
 using PrintJobInterceptor.UI.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using PrintJobInterceptor.Core.Models;
-using PrintJobInterceptor.Core.Interfaces;
-using System.Drawing.Printing;
-using Newtonsoft.Json;
 using static SiticoneNetCoreUI.SiticoneDropdown;
-using System.Text;
 
 namespace PrintJobInterceptor
 {
@@ -28,7 +23,7 @@ namespace PrintJobInterceptor
         {
             InitializeComponent();
             SetupDataGridView(dgvPrintJobs);
-            SetupHistoryDataGridView(dgvHistoryJobs);
+            SetupDataGridView(dgvHistoryJobs); 
             SetDoubleBuffering(dgvHistoryJobs, true);
            
             _presenter = new MainFormPresenter(this, printJobService);
@@ -438,44 +433,7 @@ namespace PrintJobInterceptor
             dgvPrintJobs.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.False;
             dgvPrintJobs.RowTemplate.Height = 35;
         }
-        private void SetupHistoryDataGridView(DataGridView dgv)
-        {
-          
-            dgv.Columns.Clear();
-
-            
-            dgv.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Printer",
-                DataPropertyName = "PrinterName",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
-            });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "User",
-                DataPropertyName = "User"
-            });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Document Name",
-                DataPropertyName = "DocumentName",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-            });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Status",
-                DataPropertyName = "Status"
-            });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Last Activity",
-                DataPropertyName = "LastActivity",
-                DefaultCellStyle = new DataGridViewCellStyle { Format = "g" }
-            });
-
-            
-            StyleDataGridView(dgv);
-        }
+        
         public static void SetDoubleBuffering(System.Windows.Forms.Control control, bool value)
         {
 
