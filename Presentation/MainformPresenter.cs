@@ -22,7 +22,7 @@ namespace PrintJobInterceptor.Presentation
         private readonly object _lock = new();
         private readonly System.Windows.Forms.Timer _uiRefreshTimer;
 
-        private List<PrintJobGroup> _allJobGroups = new List<PrintJobGroup>();
+        
         private List<string> _currentPrinterFilter = new List<string>();
         public MainFormPresenter(IMainFormView view, IPrintJobService printJobService)
         {

@@ -1,11 +1,8 @@
-﻿using PrintJobInterceptor.Core.Interfaces;
-using PrintJobInterceptor.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Management;
 using System.Runtime.InteropServices;
-using System.Windows.Documents;
+using PrintJobInterceptor.Core.Interfaces;
+using PrintJobInterceptor.Core.Models;
 
 namespace PrintJobInterceptor.Core.Services
 {
@@ -47,14 +44,6 @@ namespace PrintJobInterceptor.Core.Services
 
         }
 
-        private void HandleEvent(EventArrivedEventArgs e, Action<PrintJob> eventToRaise)
-        {
-            var targetInstance = e.NewEvent["TargetInstance"] as ManagementBaseObject;
-            if (targetInstance == null) return;
-
-            var printJob = CreatePrintJobFromWmiObject(targetInstance);
-            eventToRaise?.Invoke(printJob);
-        }
 
         private void OnJobCreation(object sender, EventArrivedEventArgs e)
         {
