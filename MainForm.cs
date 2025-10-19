@@ -8,8 +8,8 @@ using System.Windows.Forms;
 using PrintJobInterceptor.Core.Models;
 using PrintJobInterceptor.Core.Interfaces;
 using System.Drawing.Printing;
-using System.Windows.Controls;
 using Newtonsoft.Json;
+using static SiticoneNetCoreUI.SiticoneDropdown;
 
 namespace PrintJobInterceptor
 {
@@ -21,7 +21,9 @@ namespace PrintJobInterceptor
         private bool isDragging = false;
         private Point lastLocation;
 
-        public event Action<string> PrinterFilterChanged;
+        public event Action<List<string>> PrinterFilterChanged;
+        private readonly HashSet<string> _selectedPrinters = new HashSet<string>();
+        private List<string> SelectedPrintersList => _selectedPrinters.ToList();
         public MainForm(IPrintJobService printJobService)
         {
             InitializeComponent();
@@ -47,12 +49,15 @@ namespace PrintJobInterceptor
             this.panelTitleBar.MouseDown += PanelTitleBar_MouseDown;
             this.panelTitleBar.MouseMove += PanelTitleBar_MouseMove;
             this.panelTitleBar.MouseUp += PanelTitleBar_MouseUp;
-            this.dropDownPrinters.SelectedIndexChanged += DropDownPrinters_SelectedIndexChanged;
+            //this.dropDownPrinters.SelectedIndexChanged += DropDownPrinters_SelectedIndexChanged;
             tabControlContent.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
             this.btnRefresh.Click += BtnRefresh_Click;
+            this.dropDownPrinters.ItemsSelected += DropDownPrinters_ItemsSelected;
+            this.dropDownPrinters.AfterDropdownClose += DropDownPrinters_AfterDropdownClose;
 
 
         }
+       
         #region Title Bar and Form Events
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -85,10 +90,38 @@ namespace PrintJobInterceptor
         }
         private void DgvJobGroups_SelectionChanged(object sender, EventArgs e)
         {
-            if (dgvPrintJobs.CurrentRow != null && dgvPrintJobs.CurrentRow.DataBoundItem is PrintJobGroup selectedGroup)
+            var selectedGroup = GetSelectedJobGroup();
+            if (selectedGroup != null)
             {
                 _selectedGroup = selectedGroup;
 
+
+                lblDetailsHeader.Text = selectedGroup.GroupKey;
+
+
+                lblDetailsGlobalStatus.Text = $"Status: {selectedGroup.Status}";
+
+
+                lblDetailsGroupingStatus.Text = $"Grouping: {selectedGroup.GroupingStatus}";
+
+
+                lblDetailsJobCount.Text = $"Job Count: {selectedGroup.JobCount}";
+
+
+                lbxIndividualJobs.Items.Clear();
+                foreach (var job in selectedGroup.Jobs)
+                {
+
+                    lbxIndividualJobs.Items.Add(job.DocumentName);
+                }
+
+
+                panelContent.Visible = true;
+            }
+            else
+            {
+
+                panelDetails.Visible = false;
             }
         }
         private int GetSelectedJobId()
@@ -105,34 +138,10 @@ namespace PrintJobInterceptor
                 return;
             }
 
-
-            var columnWidths = new Dictionary<string, int>();
-            foreach (DataGridViewColumn column in dgvPrintJobs.Columns)
-            {
-                columnWidths[column.Name] = column.Width;
-            }
-
-
-            string selectedGroupKey = null;
-            if (dgvPrintJobs.CurrentRow != null && dgvPrintJobs.CurrentRow.DataBoundItem is PrintJobGroup currentGroup)
-            {
-                selectedGroupKey = currentGroup.GroupKey;
-            }
-
+            string selectedGroupKey = (dgvPrintJobs.CurrentRow?.DataBoundItem as PrintJobGroup)?.GroupKey;
 
             var groupList = groups.ToList();
-            dgvPrintJobs.DataSource = null;
             dgvPrintJobs.DataSource = groupList;
-
-
-            foreach (DataGridViewColumn column in dgvPrintJobs.Columns)
-            {
-                if (columnWidths.ContainsKey(column.Name))
-                {
-                    column.Width = columnWidths[column.Name];
-                }
-            }
-
 
             if (selectedGroupKey != null)
             {
@@ -142,11 +151,20 @@ namespace PrintJobInterceptor
 
                 if (rowToSelect != null)
                 {
+
+                    this.dgvPrintJobs.SelectionChanged -= DgvJobGroups_SelectionChanged;
+
                     dgvPrintJobs.ClearSelection();
                     rowToSelect.Selected = true;
                     dgvPrintJobs.CurrentCell = rowToSelect.Cells.Cast<DataGridViewCell>().FirstOrDefault(c => c.Visible);
+
+                    this.dgvPrintJobs.SelectionChanged += DgvJobGroups_SelectionChanged;
+
+
+                    DgvJobGroups_SelectionChanged(this, EventArgs.Empty);
                 }
             }
+
 
         }
         #endregion
@@ -155,22 +173,13 @@ namespace PrintJobInterceptor
         {
 
             dropDownPrinters.Items.Clear();
-            dropDownPrinters.Items.Add("All Printers");
 
-
-            foreach (string printerName in PrinterSettings.InstalledPrinters)
+            foreach (string printerName in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
             {
                 dropDownPrinters.Items.Add(printerName);
             }
-
-
-            dropDownPrinters.SelectedIndex = 0;
         }
-        private void DropDownPrinters_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string selectedPrinter = dropDownPrinters.SelectedItem?.ToString();
-            PrinterFilterChanged?.Invoke(selectedPrinter);
-        }
+        
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -225,6 +234,30 @@ namespace PrintJobInterceptor
 
             LoadHistory();
         }
+        private void DropDownPrinters_ItemsSelected(object sender, DropdownItemsSelectedEventArgs e)
+        {
+            List<string> selectedPrinters = new List<string>();
+            if (e.SelectedTexts != null)
+            {
+                foreach (var text in e.SelectedTexts)
+                {
+                    selectedPrinters.Add(text);
+                }
+            }
+
+          
+            PrinterFilterChanged?.Invoke(selectedPrinters);
+        }
+        private void DropDownPrinters_AfterDropdownClose(object sender, EventArgs e)
+        {
+
+            if (dropDownPrinters.SelectedItems.Count() == 0)
+            {
+
+                PrinterFilterChanged?.Invoke(new List<string>());
+            }
+        }
+
         #endregion
         public void ShowNotification(string message, FeedbackType type)
         {
@@ -370,6 +403,7 @@ namespace PrintJobInterceptor
         #endregion
 
 
-       
+
+      
     }
 }

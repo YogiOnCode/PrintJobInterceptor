@@ -22,8 +22,8 @@ namespace PrintJobInterceptor.Presentation
         private readonly object _lock = new();
         private readonly System.Windows.Forms.Timer _uiRefreshTimer;
 
-        private List<PrintJobGroup> _allJobGroups = new List<PrintJobGroup>(); 
-        private string _currentPrinterFilter = "All Printers";
+        private List<PrintJobGroup> _allJobGroups = new List<PrintJobGroup>();
+        private List<string> _currentPrinterFilter = new List<string>();
         public MainFormPresenter(IMainFormView view, IPrintJobService printJobService)
         {
             _view = view;
@@ -56,6 +56,7 @@ namespace PrintJobInterceptor.Presentation
                 {
                     _printJobService.CancelJob(job.JobId, job.PrinterName);
                 }
+                ApplyFilters();
             };
 
 
@@ -63,9 +64,9 @@ namespace PrintJobInterceptor.Presentation
             _uiRefreshTimer.Tick += UiRefreshTimer_Tick;
         }
 
-        private void OnPrinterFilterChanged(string selectedPrinter)
+        private void OnPrinterFilterChanged(List<string> selectedPrinters)
         {
-            _currentPrinterFilter = selectedPrinter;
+            _currentPrinterFilter = selectedPrinters ?? new List<string>();
             ApplyFilters();
         }
         private void ApplyFilters()
@@ -74,16 +75,16 @@ namespace PrintJobInterceptor.Presentation
             lock (_lock)
             {
                 var allGroups = _jobGroups.Values.ToList();
-                if (string.IsNullOrEmpty(_currentPrinterFilter) || _currentPrinterFilter == "All Printers")
+                if (_currentPrinterFilter.Count == 0)
                 {
-                    filteredGroups = allGroups; 
+                    filteredGroups = allGroups;
                 }
                 else
                 {
-                    
+
                     filteredGroups = allGroups
-                        .Where(g => g.PrinterName.Equals(_currentPrinterFilter, StringComparison.OrdinalIgnoreCase))
-                        .ToList();
+                            .Where(g => _currentPrinterFilter.Contains(g.PrinterName, StringComparer.OrdinalIgnoreCase))
+                            .ToList();
                 }
             }
 
@@ -92,64 +93,105 @@ namespace PrintJobInterceptor.Presentation
 
         private void OnJobReceived(PrintJob job)
         {
-            PrintJobGroup group = null;
             lock (_lock)
             {
-                string baseDocName = GetBaseDocumentName(job.DocumentName);
-                string groupKey = $"{job.User}|{baseDocName}".ToLower();
-               
 
-                if (_jobGroups.TryGetValue(groupKey, out var existingGroup) && existingGroup.GroupingStatus == "Grouping")
+                var existingGroupForJob = _jobGroups.Values
+                    .FirstOrDefault(g => g.Jobs.Any(j => j.JobId == job.JobId));
+
+                if (existingGroupForJob != null)
                 {
-                   
-                    group = existingGroup;
+
+                    var jobToUpdate = existingGroupForJob.Jobs.First(j => j.JobId == job.JobId);
+
+
+                    existingGroupForJob.Jobs.Remove(jobToUpdate);
+                    existingGroupForJob.Jobs.Add(job);
+                    existingGroupForJob.LastActivity = DateTime.Now;
                 }
                 else
                 {
-                   
-                    group = new PrintJobGroup(groupKey);
-                    _jobGroups[groupKey] = group;
-                }
 
-                var existingJobInGroup = group.Jobs.FirstOrDefault(j => j.JobId == job.JobId);
-                if (existingJobInGroup != null)
-                {
-                  
-                    group.Jobs.Remove(existingJobInGroup);
-                    group.Jobs.Add(job);
-                }
-                else
-                {
-                  
-                    group.Jobs.Add(job);
-                }
+                    string baseDocName = GetBaseDocumentName(job.DocumentName);
+                    string logicalGroupKey = $"{job.User}|{baseDocName}".ToLower();
 
-                
-                group.LastActivity = DateTime.Now;
-                group.GroupingStatus = "Grouping";
+
+                    var groupToAddTo = _jobGroups.Values.FirstOrDefault(g => g.GroupKey == logicalGroupKey && g.GroupingStatus == "Grouping");
+
+                    if (groupToAddTo != null)
+                    {
+
+                        groupToAddTo.Jobs.Add(job);
+                        groupToAddTo.LastActivity = DateTime.Now;
+                    }
+                    else
+                    {
+
+                        var newGroup = new PrintJobGroup(logicalGroupKey);
+                        newGroup.Jobs.Add(job);
+                        newGroup.LastActivity = DateTime.Now;
+                        newGroup.GroupingStatus = "Grouping";
+
+                        if (!_jobGroups.ContainsKey(logicalGroupKey))
+                        {
+                            _jobGroups.Add(logicalGroupKey, newGroup);
+                        }
+
+                    }
+                }
             }
 
-            CheckAndArchiveIfTerminal(group);
+
             ApplyFilters();
         }
 
         private void OnJobDeleted(PrintJob deletedJob)
         {
-            PrintJobGroup group = null;
+           
+            var groupEntry = _jobGroups
+            .FirstOrDefault(kvp => kvp.Value.Jobs.Any(j => j.JobId == deletedJob.JobId));
+
+            if (groupEntry.Value == null)
+            {
+                ApplyFilters();
+                return;
+            }
+
+            string dictionaryKey = groupEntry.Key; 
+            PrintJobGroup group = groupEntry.Value;
+
             lock (_lock)
             {
-                string baseDocName = GetBaseDocumentName(deletedJob.DocumentName);
-                string groupKey = $"{deletedJob.User}|{baseDocName}".ToLower();
-
-                if (_jobGroups.TryGetValue(groupKey, out group))
+                var jobInGroup = group.Jobs.FirstOrDefault(j => j.JobId == deletedJob.JobId);
+                if (jobInGroup != null)
                 {
-                    var jobInGroup = group.Jobs.FirstOrDefault(j => j.JobId == deletedJob.JobId);
-                    if (jobInGroup != null)
-                        jobInGroup.Status = "Completed";
+                    
+                    jobInGroup.Status = "Completed";
+                    group.LastActivity = DateTime.Now;
                 }
+
+                
+                CheckAndArchiveIfTerminal(dictionaryKey, group);
             }
-            CheckAndArchiveIfTerminal(group);
+
             ApplyFilters();
+        }
+
+       
+        private void CheckAndArchiveIfTerminal(string dictionaryKey, PrintJobGroup group)
+        {
+            if (group == null) return;
+
+            bool isTerminal = group.Status.Equals("Finished", StringComparison.OrdinalIgnoreCase) ||
+                              group.Status.Contains("Error") ||
+                              group.Status.Contains("Cancel");
+
+            if (isTerminal)
+            {
+                ArchiveGroup(group);
+              
+                _jobGroups.Remove(dictionaryKey);
+            }
         }
 
         private string GetBaseDocumentName(string documentName)
@@ -170,6 +212,7 @@ namespace PrintJobInterceptor.Presentation
         private void UiRefreshTimer_Tick(object sender, EventArgs e)
         {
             bool needsUiRefresh = false;
+
 
             lock (_lock)
             {
@@ -229,20 +272,7 @@ namespace PrintJobInterceptor.Presentation
                 Console.WriteLine($"Failed to archive job group: {ex.Message}");
             }
         }
-        private void CheckAndArchiveIfTerminal(PrintJobGroup group)
-        {
-            if (group == null) return;
-
-            bool isTerminal = group.Status == "Finished" ||
-                              group.Status == "Error" ||
-                              group.Status.Contains("Cancel");
-
-            if (isTerminal)
-            {
-                ArchiveGroup(group);
-                _jobGroups.Remove(group.GroupKey);
-            }
-        }
+        
         #endregion
         public void Start()
         {

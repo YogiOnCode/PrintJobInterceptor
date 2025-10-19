@@ -62,7 +62,7 @@ namespace PrintJobInterceptor.Core.Services
         public void StartMonitoring() // Change the TestScenerario here to test different scenarios
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            RunTest(TestScenario.InteractiveTest, _cancellationTokenSource.Token);
+            RunTest(TestScenario.GroupedJobWithTimeout, _cancellationTokenSource.Token);
           
         }
 

@@ -40,6 +40,7 @@
             MainSplitContainer = new SplitContainer();
             contentSplitContainer1 = new SplitContainer();
             panelPrinters = new Panel();
+            siticonePanel1 = new SiticoneNetCoreUI.SiticonePanel();
             dropDownPrinters = new SiticoneNetCoreUI.SiticoneDropdown();
             tabControlContent = new SiticoneNetCoreUI.SiticoneTabControl();
             activeTab = new TabPage();
@@ -49,6 +50,12 @@
             dgvHistoryJobs = new DataGridView();
             btnRefresh = new FontAwesome.Sharp.IconButton();
             detailsSplitContainer = new SplitContainer();
+            panelDetails = new Panel();
+            lbxIndividualJobs = new ListView();
+            lblDetailsJobCount = new Label();
+            lblDetailsGroupingStatus = new Label();
+            lblDetailsGlobalStatus = new Label();
+            lblDetailsHeader = new Label();
             pnlButtons = new Panel();
             buttonCancel = new SiticoneNetCoreUI.SiticoneButton();
             buttonPause = new SiticoneNetCoreUI.SiticoneButton();
@@ -74,8 +81,10 @@
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvHistoryJobs).BeginInit();
             ((System.ComponentModel.ISupportInitialize)detailsSplitContainer).BeginInit();
+            detailsSplitContainer.Panel1.SuspendLayout();
             detailsSplitContainer.Panel2.SuspendLayout();
             detailsSplitContainer.SuspendLayout();
+            panelDetails.SuspendLayout();
             pnlButtons.SuspendLayout();
             SuspendLayout();
             // 
@@ -210,7 +219,6 @@
             MainSplitContainer.Size = new Size(1184, 683);
             MainSplitContainer.SplitterDistance = 973;
             MainSplitContainer.TabIndex = 0;
-          
             // 
             // contentSplitContainer1
             // 
@@ -232,12 +240,60 @@
             // panelPrinters
             // 
             panelPrinters.BackColor = Color.FromArgb(34, 34, 34);
+            panelPrinters.Controls.Add(siticonePanel1);
             panelPrinters.Controls.Add(dropDownPrinters);
             panelPrinters.Dock = DockStyle.Fill;
             panelPrinters.Location = new Point(0, 0);
             panelPrinters.Name = "panelPrinters";
             panelPrinters.Size = new Size(233, 683);
             panelPrinters.TabIndex = 0;
+            // 
+            // siticonePanel1
+            // 
+            siticonePanel1.AcrylicTintColor = Color.FromArgb(128, 255, 255, 255);
+            siticonePanel1.BackColor = Color.Transparent;
+            siticonePanel1.BorderAlignment = System.Drawing.Drawing2D.PenAlignment.Center;
+            siticonePanel1.BorderDashPattern = null;
+            siticonePanel1.BorderGradientEndColor = Color.Purple;
+            siticonePanel1.BorderGradientStartColor = Color.Blue;
+            siticonePanel1.BorderThickness = 2F;
+            siticonePanel1.CornerRadiusBottomLeft = 10F;
+            siticonePanel1.CornerRadiusBottomRight = 10F;
+            siticonePanel1.CornerRadiusTopLeft = 10F;
+            siticonePanel1.CornerRadiusTopRight = 10F;
+            siticonePanel1.EnableAcrylicEffect = false;
+            siticonePanel1.EnableMicaEffect = false;
+            siticonePanel1.EnableRippleEffect = false;
+            siticonePanel1.FillColor = Color.White;
+            siticonePanel1.GradientColors = new Color[]
+    {
+    Color.White,
+    Color.LightGray,
+    Color.Gray
+    };
+            siticonePanel1.GradientPositions = new float[]
+    {
+    0F,
+    0.5F,
+    1F
+    };
+            siticonePanel1.Location = new Point(14, 165);
+            siticonePanel1.Name = "siticonePanel1";
+            siticonePanel1.PatternStyle = System.Drawing.Drawing2D.HatchStyle.Max;
+            siticonePanel1.RippleAlpha = 50;
+            siticonePanel1.RippleAlphaDecrement = 3;
+            siticonePanel1.RippleColor = Color.FromArgb(50, 255, 255, 255);
+            siticonePanel1.RippleMaxSize = 600F;
+            siticonePanel1.RippleSpeed = 15F;
+            siticonePanel1.ShowBorder = true;
+            siticonePanel1.Size = new Size(122, 109);
+            siticonePanel1.TabIndex = 1;
+            siticonePanel1.TabStop = true;
+            siticonePanel1.TrackSystemTheme = false;
+            siticonePanel1.UseBorderGradient = false;
+            siticonePanel1.UseMultiGradient = false;
+            siticonePanel1.UsePatternTexture = false;
+            siticonePanel1.UseRadialGradient = false;
             // 
             // dropDownPrinters
             // 
@@ -350,7 +406,7 @@
             historyTab.Location = new Point(4, 44);
             historyTab.Name = "historyTab";
             historyTab.Padding = new Padding(3);
-            historyTab.Size = new Size(740, 635);
+            historyTab.Size = new Size(728, 635);
             tabControlContent.SetTabImage(historyTab, null);
             historyTab.TabIndex = 1;
             historyTab.Text = "History";
@@ -370,7 +426,7 @@
             tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 37F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(734, 629);
+            tableLayoutPanel2.Size = new Size(722, 629);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // dgvHistoryJobs
@@ -380,7 +436,7 @@
             dgvHistoryJobs.Location = new Point(0, 37);
             dgvHistoryJobs.Margin = new Padding(0);
             dgvHistoryJobs.Name = "dgvHistoryJobs";
-            dgvHistoryJobs.Size = new Size(734, 592);
+            dgvHistoryJobs.Size = new Size(722, 592);
             dgvHistoryJobs.TabIndex = 0;
             // 
             // btnRefresh
@@ -392,7 +448,7 @@
             btnRefresh.IconColor = Color.White;
             btnRefresh.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnRefresh.IconSize = 30;
-            btnRefresh.Location = new Point(686, 3);
+            btnRefresh.Location = new Point(674, 3);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(45, 31);
             btnRefresh.TabIndex = 1;
@@ -405,12 +461,90 @@
             detailsSplitContainer.Name = "detailsSplitContainer";
             detailsSplitContainer.Orientation = Orientation.Horizontal;
             // 
+            // detailsSplitContainer.Panel1
+            // 
+            detailsSplitContainer.Panel1.Controls.Add(panelDetails);
+            // 
             // detailsSplitContainer.Panel2
             // 
             detailsSplitContainer.Panel2.Controls.Add(pnlButtons);
             detailsSplitContainer.Size = new Size(207, 683);
             detailsSplitContainer.SplitterDistance = 468;
             detailsSplitContainer.TabIndex = 0;
+            // 
+            // panelDetails
+            // 
+            panelDetails.Controls.Add(lbxIndividualJobs);
+            panelDetails.Controls.Add(lblDetailsJobCount);
+            panelDetails.Controls.Add(lblDetailsGroupingStatus);
+            panelDetails.Controls.Add(lblDetailsGlobalStatus);
+            panelDetails.Controls.Add(lblDetailsHeader);
+            panelDetails.Dock = DockStyle.Fill;
+            panelDetails.Location = new Point(0, 0);
+            panelDetails.Name = "panelDetails";
+            panelDetails.Size = new Size(207, 468);
+            panelDetails.TabIndex = 0;
+            // 
+            // lbxIndividualJobs
+            // 
+            lbxIndividualJobs.BackColor = Color.FromArgb(32, 32, 32);
+            lbxIndividualJobs.BorderStyle = BorderStyle.None;
+            lbxIndividualJobs.Dock = DockStyle.Bottom;
+            lbxIndividualJobs.Font = new Font("Segoe UI Variable Small", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            lbxIndividualJobs.ForeColor = Color.White;
+            lbxIndividualJobs.GridLines = true;
+            lbxIndividualJobs.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+            lbxIndividualJobs.Location = new Point(0, 319);
+            lbxIndividualJobs.Name = "lbxIndividualJobs";
+            lbxIndividualJobs.ShowItemToolTips = true;
+            lbxIndividualJobs.Size = new Size(207, 149);
+            lbxIndividualJobs.TabIndex = 4;
+            lbxIndividualJobs.UseCompatibleStateImageBehavior = false;
+            lbxIndividualJobs.View = View.List;
+            // 
+            // lblDetailsJobCount
+            // 
+            lblDetailsJobCount.AutoSize = true;
+            lblDetailsJobCount.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            lblDetailsJobCount.ForeColor = Color.White;
+            lblDetailsJobCount.Location = new Point(25, 214);
+            lblDetailsJobCount.Name = "lblDetailsJobCount";
+            lblDetailsJobCount.Size = new Size(50, 20);
+            lblDetailsJobCount.TabIndex = 3;
+            lblDetailsJobCount.Text = "label2";
+            // 
+            // lblDetailsGroupingStatus
+            // 
+            lblDetailsGroupingStatus.AutoSize = true;
+            lblDetailsGroupingStatus.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            lblDetailsGroupingStatus.ForeColor = Color.White;
+            lblDetailsGroupingStatus.Location = new Point(25, 161);
+            lblDetailsGroupingStatus.Name = "lblDetailsGroupingStatus";
+            lblDetailsGroupingStatus.Size = new Size(50, 20);
+            lblDetailsGroupingStatus.TabIndex = 2;
+            lblDetailsGroupingStatus.Text = "label2";
+            // 
+            // lblDetailsGlobalStatus
+            // 
+            lblDetailsGlobalStatus.AutoSize = true;
+            lblDetailsGlobalStatus.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            lblDetailsGlobalStatus.ForeColor = Color.White;
+            lblDetailsGlobalStatus.Location = new Point(25, 101);
+            lblDetailsGlobalStatus.Name = "lblDetailsGlobalStatus";
+            lblDetailsGlobalStatus.Size = new Size(50, 20);
+            lblDetailsGlobalStatus.TabIndex = 1;
+            lblDetailsGlobalStatus.Text = "label2";
+            // 
+            // lblDetailsHeader
+            // 
+            lblDetailsHeader.AutoSize = true;
+            lblDetailsHeader.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            lblDetailsHeader.ForeColor = Color.White;
+            lblDetailsHeader.Location = new Point(25, 52);
+            lblDetailsHeader.Name = "lblDetailsHeader";
+            lblDetailsHeader.Size = new Size(50, 20);
+            lblDetailsHeader.TabIndex = 0;
+            lblDetailsHeader.Text = "label2";
             // 
             // pnlButtons
             // 
@@ -686,9 +820,12 @@
             historyTab.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvHistoryJobs).EndInit();
+            detailsSplitContainer.Panel1.ResumeLayout(false);
             detailsSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)detailsSplitContainer).EndInit();
             detailsSplitContainer.ResumeLayout(false);
+            panelDetails.ResumeLayout(false);
+            panelDetails.PerformLayout();
             pnlButtons.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -719,5 +856,15 @@
         private TableLayoutPanel tableLayoutPanel2;
         private FontAwesome.Sharp.IconButton btnRefresh;
         private Panel pnlButtons;
+        private Panel panelDetails;
+        private Label label5;
+        private Label label4;
+        private Label label3;
+        private Label lblDetailsHeader;
+        private ListView lbxIndividualJobs;
+        private Label lblDetailsJobCount;
+        private Label lblDetailsGroupingStatus;
+        private Label lblDetailsGlobalStatus;
+        private SiticoneNetCoreUI.SiticonePanel siticonePanel1;
     }
 }
