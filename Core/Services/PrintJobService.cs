@@ -170,7 +170,27 @@ namespace PrintJobInterceptor.Core.Services
             };
            
         }
-       
+        public bool DoesJobExist(int jobId, string printerName)
+        {
+            try
+            {
+               
+                string wmiQuery = $"SELECT JobId FROM Win32_PrintJob WHERE JobId = {jobId} AND Name LIKE '{printerName.Replace("\\", "\\\\")}%'";
+
+                using (var searcher = new ManagementObjectSearcher(wmiQuery))
+                using (var results = searcher.Get())
+                {
+                   
+                    return results.Count > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+            
+                System.Diagnostics.Debug.WriteLine($"WMI check failed for JobId {jobId}: {ex.Message}");
+                return false; 
+            }
+        }
         public void StartMonitoring()
         {
             _creationWatcher.Start();

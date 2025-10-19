@@ -18,6 +18,6 @@ namespace PrintJobInterceptor.Core.Interfaces
         void PauseJob(int jobId, string printerName);
         void ResumeJob(int jobId, string printerName);
         void CancelJob(int jobId, string printerName);
-      
+        bool DoesJobExist(int jobId, string printerName);
     }
 }

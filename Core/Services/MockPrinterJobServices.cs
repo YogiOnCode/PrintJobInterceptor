@@ -273,7 +273,11 @@ namespace PrintJobInterceptor.Core.Services
                 SubmittedAt = DateTime.Now
             };
         }
-        
+        public bool DoesJobExist(int jobId, string printerName)
+        {
+           
+            return _activeSimulatedJobs.ContainsKey(jobId);
+        }
         public void Dispose()
         {
             _cancellationTokenSource?.Dispose();
