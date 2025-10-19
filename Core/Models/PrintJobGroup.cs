@@ -23,10 +23,30 @@ namespace PrintJobInterceptor.Core.Models
         {
             get
             {
-                if (Jobs.Any(j => j.Status.Contains("Error"))) return "Error";
-                if (Jobs.Any(j => j.Status.Contains("Paused"))) return "Paused";
-                if (Jobs.All(j => j.Status.Contains("Printed") || j.Status.Contains("Completed"))) return "Finished";
-                return "Printing"; 
+
+                if (Jobs.Any(j => j.Status.Contains("Error")))
+                    return "Error";
+
+
+                if (Jobs.Any(j => j.Status.Contains("Delet") || j.Status.Contains("Cancel")))
+                    return "Deleting/Cancelled";
+
+
+                if (Jobs.Any(j => j.Status.Contains("Paused")))
+                    return "Paused";
+
+                if (Jobs.All(j => j.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase)))
+                    return "Finished";
+
+
+                var firstActiveJob = Jobs.FirstOrDefault(j => !j.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase));
+                if (firstActiveJob != null)
+                {
+                    return firstActiveJob.Status;
+                }
+
+
+                return "Unknown";
             }
         }
 
