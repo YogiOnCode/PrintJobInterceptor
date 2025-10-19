@@ -16,5 +16,7 @@ namespace PrintJobInterceptor.UI.Interfaces
         event Action<PrintJobGroup> PauseJobRequested;
         event Action<PrintJobGroup> ResumeJobRequested;
         event Action<PrintJobGroup> CancelJobRequested;
+        event Action<List<string>> PrinterFilterChanged;
+
     }
 }

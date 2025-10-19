@@ -62,7 +62,7 @@ namespace PrintJobInterceptor.Core.Services
         public void StartMonitoring() // Change the TestScenerario here to test different scenarios
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            RunTest(TestScenario.SequentialJobNames, _cancellationTokenSource.Token);
+            RunTest(TestScenario.InteractiveTest, _cancellationTokenSource.Token);
           
         }
 
@@ -141,7 +141,7 @@ namespace PrintJobInterceptor.Core.Services
 
           
             Console.WriteLine($"(Mock) Waiting for {GROUPING_TIMEOUT_MS}ms timeout...");
-            await Task.Delay(GROUPING_TIMEOUT_MS + 1000, token);
+            await Task.Delay(GROUPING_TIMEOUT_MS + 2000, token);
 
         
             Console.WriteLine("(Mock) Sending one more job after timeout.");
@@ -273,7 +273,11 @@ namespace PrintJobInterceptor.Core.Services
                 SubmittedAt = DateTime.Now
             };
         }
-        
+        public bool DoesJobExist(int jobId, string printerName)
+        {
+           
+            return _activeSimulatedJobs.ContainsKey(jobId);
+        }
         public void Dispose()
         {
             _cancellationTokenSource?.Dispose();
