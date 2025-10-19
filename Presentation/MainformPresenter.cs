@@ -30,6 +30,28 @@ namespace PrintJobInterceptor.Presentation
             _printJobService.JobUpdated += OnJobReceived;
             _printJobService.JobDeleted += OnJobDeleted;
 
+            _view.PauseJobRequested += (group) => {
+                if (group == null) return;
+                foreach (var job in group.Jobs.ToList())
+                {
+                    _printJobService.PauseJob(job.JobId, job.PrinterName);
+                }
+            };
+            _view.ResumeJobRequested += (group) => {
+                if (group == null) return;
+                foreach (var job in group.Jobs.ToList())
+                {
+                    _printJobService.ResumeJob(job.JobId, job.PrinterName);
+                }
+            };
+            _view.CancelJobRequested += (group) => {
+                if (group == null) return;
+                foreach (var job in group.Jobs.ToList())
+                {
+                    _printJobService.CancelJob(job.JobId, job.PrinterName);
+                }
+            };
+
             _uiRefreshTimer = new System.Windows.Forms.Timer { Interval = 1000 };
             _uiRefreshTimer.Tick += UiRefreshTimer_Tick;
         }
@@ -41,7 +63,7 @@ namespace PrintJobInterceptor.Presentation
                 string baseDocName = GetBaseDocumentName(job.DocumentName);
                 string groupKey = $"{job.User}|{baseDocName}".ToLower();
 
-                if (_jobGroups.TryGetValue(groupKey, out var group))
+                if (_jobGroups.TryGetValue(groupKey, out var group) && group.GroupingStatus == "Grouping")
                 {
 
                     var existingJob = group.Jobs.FirstOrDefault(j => j.JobId == job.JobId);
@@ -55,11 +77,16 @@ namespace PrintJobInterceptor.Presentation
                     {
                        
                         group.Jobs.Add(job);
-                        group.LastActivity = DateTime.Now;
+                       
                     }
+                    group.LastActivity = DateTime.Now;
                 }
                 else
                 {
+                    if (group != null)
+                    {
+                        groupKey = $"{groupKey}_{DateTime.Now:HHmmssfff}";
+                    }
 
                     var newGroup = new PrintJobGroup(groupKey);
                     newGroup.Jobs.Add(job);
@@ -79,7 +106,16 @@ namespace PrintJobInterceptor.Presentation
                     var jobInGroup = group.Jobs.FirstOrDefault(j => j.JobId == deletedJob.JobId);
                     if (jobInGroup != null)
                     {
-                        jobInGroup.Status = "Completed";
+                        if (deletedJob.Status != null &&
+                            (deletedJob.Status.IndexOf("delet", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             deletedJob.Status.IndexOf("cancel", StringComparison.OrdinalIgnoreCase) >= 0))
+                        {
+                            jobInGroup.Status = "Cancelled";
+                        }
+                        else
+                        {
+                            jobInGroup.Status = "Completed";
+                        }
                     }
                 }
             }
@@ -105,22 +141,40 @@ namespace PrintJobInterceptor.Presentation
 
         private void UiRefreshTimer_Tick(object sender, EventArgs e)
         {
-            lock(_lock)
+            bool needsUiRefresh = false;
+            List<PrintJobGroup> groupsToFinalize;
+
+            lock (_lock)
             {
-              
-                var groupsToFinalize = _jobGroups.Values
+                // ASSIGNED HERE: The list is assigned its value inside the lock.
+                groupsToFinalize = _jobGroups.Values
                     .Where(g => g.GroupingStatus == "Grouping" && (DateTime.Now - g.LastActivity).TotalMilliseconds > GROUPING_TIMEOUT_MS)
                     .ToList();
 
                 foreach (var group in groupsToFinalize)
                 {
-                 
                     group.GroupingStatus = "Finalized";
                 }
-            }
 
-          
-            _view.DisplayJobGroups(_jobGroups.Values.ToList());
+                // --- Sanity Check Logic ---
+                var potentiallyStuckJobs = _jobGroups.Values
+                    .SelectMany(g => g.Jobs)
+                    .Where(j => (j.Status.Contains("Printing") || j.Status.Contains("Spooling")) && (DateTime.Now - j.SubmittedAt).TotalSeconds > 5)
+                    .ToList();
+
+                foreach (var job in potentiallyStuckJobs)
+                {
+                    if (!_printJobService.DoesJobExist(job.JobId, job.PrinterName))
+                    {
+                        job.Status = "Completed";
+                        needsUiRefresh = true;
+                    }
+                }
+            }
+            if (needsUiRefresh || groupsToFinalize.Any())
+            {
+                _view.DisplayJobGroups(_jobGroups.Values.ToList());
+            }
         }
 
         public void Start()

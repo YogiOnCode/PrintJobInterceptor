@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PrintJobInterceptor.Core.Models
 {
+
     public class PrintJobGroup
     {
         public string GroupKey { get; }
