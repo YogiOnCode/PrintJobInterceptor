@@ -424,14 +424,14 @@ namespace PrintJobInterceptor
             dgvPrintJobs.RowHeadersVisible = false;
 
 
-            var segoeFont = new Font("Segoe UI Variable", 9F);
+            var segoeFont = new Font("Segoe UI", 9F); 
             dgvPrintJobs.Font = segoeFont;
 
 
             dgvPrintJobs.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dgvPrintJobs.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(32, 32, 32);
             dgvPrintJobs.ColumnHeadersDefaultCellStyle.ForeColor = textColor;
-            dgvPrintJobs.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Variable", 10F, FontStyle.Bold);
+            dgvPrintJobs.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             dgvPrintJobs.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvPrintJobs.ColumnHeadersDefaultCellStyle.Padding = new Padding(5, 0, 0, 0);
 
