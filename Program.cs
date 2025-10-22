@@ -47,10 +47,10 @@ namespace PrintJobInterceptor
                 .WriteTo.Debug()     
                 .WriteTo.File(        
                     path: logPath,
-                    rollingInterval: RollingInterval.Day, // Creates a new file each day
+                    rollingInterval: RollingInterval.Day, 
                     rollOnFileSizeLimit: true,
-                    fileSizeLimitBytes: 10485760, // 10 MB file limit
-                    retainedFileCountLimit: 5      // Keep the last 5 log files
+                    fileSizeLimitBytes: 10485760, //10mb
+                    retainedFileCountLimit: 5       
                 )
                 .CreateLogger();
             services.AddLogging(builder =>
