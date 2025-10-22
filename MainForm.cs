@@ -6,6 +6,7 @@ using PrintJobInterceptor.Presentation;
 using PrintJobInterceptor.UI.Helpers;
 using PrintJobInterceptor.UI.Interfaces;
 using static SiticoneNetCoreUI.SiticoneDropdown;
+using Microsoft.Extensions.Logging;
 
 namespace PrintJobInterceptor
 {
@@ -13,20 +14,25 @@ namespace PrintJobInterceptor
     {
         private readonly MainFormPresenter _presenter;
         private PrintJobGroup _selectedGroup;
+        private readonly ILogger<MainForm> _logger;
 
         private bool isDragging = false;
         private Point lastLocation;
 
         public event Action<List<string>> PrinterFilterChanged;
         private readonly HashSet<string> _selectedPrinters = new HashSet<string>();
-        public MainForm(IPrintJobService printJobService)
+        public MainForm(MainFormPresenter presenter, ILogger<MainForm> logger)
         {
             InitializeComponent();
+            _logger = logger;
+            _logger.LogInformation("MainForm component is initializing.");
+
             SetupDataGridView(dgvPrintJobs);
             SetupDataGridView(dgvHistoryJobs); 
             SetDoubleBuffering(dgvHistoryJobs, true);
-           
-            _presenter = new MainFormPresenter(this, printJobService);
+
+            _presenter = presenter;
+            _presenter.SetView(this);
 
             this.Text = string.Empty;
             this.ControlBox = false;
@@ -49,19 +55,23 @@ namespace PrintJobInterceptor
         #region Title Bar and Form Events
         private void MainForm_Load(object sender, EventArgs e)
         {
+            _logger.LogDebug("MainForm_Load event hit");
             PopulatePrinterList();
             _presenter.Start();
         }
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            _logger.LogDebug("MainForm_FormClosing event fired");
             _presenter.Stop();
         }
         private void BtnClose_Click(object sender, EventArgs e)
         {
+            _logger.LogDebug("Close button clicked.");
             this.Close();
         }
         private void BtnMinimize_Click(object sender, EventArgs e)
         {
+            _logger.LogDebug("Minimize button clicked.");
             this.WindowState = FormWindowState.Minimized;
         }
         #endregion
@@ -72,6 +82,7 @@ namespace PrintJobInterceptor
         {
             if (dgvPrintJobs.CurrentRow != null && dgvPrintJobs.CurrentRow.DataBoundItem is PrintJobGroup selectedGroup)
             {
+               
                 return selectedGroup;
             }
             return null;
@@ -81,6 +92,7 @@ namespace PrintJobInterceptor
             var selectedGroup = GetSelectedJobGroup();
             if (selectedGroup != null)
             {
+                _logger.LogDebug("Selection changed. Displaying details for GroupKey: {GroupKey}", selectedGroup.GroupKey);
                 _selectedGroup = selectedGroup;
 
 
@@ -115,7 +127,7 @@ namespace PrintJobInterceptor
             }
             else
             {
-
+                _logger.LogDebug("Selection cleared.");
                 panelDetails.Visible = false;
             }
         }
@@ -149,6 +161,7 @@ namespace PrintJobInterceptor
         {
             if (dgvPrintJobs.InvokeRequired)
             {
+                _logger.LogTrace("Invoke required for DisplayJobGroups.");
                 dgvPrintJobs.Invoke(new Action(() => DisplayJobGroups(groups)));
                 return;
             }
@@ -197,7 +210,7 @@ namespace PrintJobInterceptor
         #region UI events
         private void PopulatePrinterList()
         {
-
+            _logger.LogDebug("Populating printer list.");
             dropDownPrinters.Items.Clear();
 
             foreach (string printerName in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
@@ -211,6 +224,7 @@ namespace PrintJobInterceptor
 
             if (tabControlContent.SelectedTab == historyTab) 
             {
+                _logger.LogInformation("History tab selected. Loading history.");
                 LoadHistory();
             }
         }
@@ -224,12 +238,14 @@ namespace PrintJobInterceptor
 
             if (!File.Exists(historyFile))
             {
+                _logger.LogWarning("History file not found: {HistoryFile}", historyFile);
                 dgvHistoryJobs.ResumeLayout();
                 return;
             }
 
             var historyGroups = new List<PrintJobGroup>();
             var lines = File.ReadAllLines(historyFile);
+            _logger.LogDebug("Reading {LineCount} lines from history file.", lines.Length);
 
             foreach (var line in lines)
             {
@@ -247,17 +263,19 @@ namespace PrintJobInterceptor
                 catch (JsonException ex)
                 {
 
-                    Console.WriteLine($"Error reading history line: {ex.Message}");
+                   _logger.LogError(ex, "Failed to deserialize history line: {HistoryLine}", line);
+                
                 }
             }
 
             dgvHistoryJobs.DataSource = null;
             dgvHistoryJobs.DataSource = historyGroups.OrderByDescending(g => g.LastActivity).ToList();
             dgvHistoryJobs.ResumeLayout();
+            _logger.LogInformation("History loaded successfully. {GroupCount} groups displayed.", historyGroups.Count);
         }
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
-
+            _logger.LogInformation("History refresh button clicked.");
             LoadHistory();
         }
         private void DropDownPrinters_ItemsSelected(object sender, DropdownItemsSelectedEventArgs e)
@@ -271,7 +289,7 @@ namespace PrintJobInterceptor
                 }
             }
 
-          
+            _logger.LogDebug("Printer filter items selected, raising event for presenter. Count: {Count}", selectedPrinters.Count);
             PrinterFilterChanged?.Invoke(selectedPrinters);
         }
         private void DropDownPrinters_AfterDropdownClose(object sender, EventArgs e)
