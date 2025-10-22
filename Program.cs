@@ -6,6 +6,7 @@ using PrintJobInterceptor.UI.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Windows.Forms;
+using Serilog;
 
 namespace PrintJobInterceptor
 {
@@ -36,21 +37,36 @@ namespace PrintJobInterceptor
 
         private static void ConfigureServices(IServiceCollection services)
         {
+            string logPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "PrintJobInterceptor",
+                "log-.txt");
+            Serilog.Core.Logger logger = new LoggerConfiguration()
+                .MinimumLevel.Debug() 
+                .WriteTo.Console()   
+                .WriteTo.Debug()     
+                .WriteTo.File(        
+                    path: logPath,
+                    rollingInterval: RollingInterval.Day, // Creates a new file each day
+                    rollOnFileSizeLimit: true,
+                    fileSizeLimitBytes: 10485760, // 10 MB file limit
+                    retainedFileCountLimit: 5      // Keep the last 5 log files
+                )
+                .CreateLogger();
             services.AddLogging(builder =>
             {
-                
-                builder.AddConsole();
-                builder.AddDebug();
+                builder.ClearProviders(); 
+                builder.AddSerilog(logger); 
             });
 
             if (IS_TEST_MODE) { services.AddSingleton<IPrintJobService, MockPrintJobService>(); }
 
             else { services.AddSingleton<IPrintJobService, PrintJobService>(); }
-               
-            
-            services.AddTransient<MainFormPresenter>();
+
             services.AddTransient<IMainFormView, MainForm>();
-            services.AddSingleton<IPrintJobService, PrintJobService>();
+            services.AddTransient<MainFormPresenter>();
+
+
         }
     }
 }

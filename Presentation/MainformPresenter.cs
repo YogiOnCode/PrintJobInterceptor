@@ -16,7 +16,7 @@ namespace PrintJobInterceptor.Presentation
     public class MainFormPresenter
     {
         private const int GROUPING_TIMEOUT_MS = 5000;
-        private readonly IMainFormView _view;
+        private IMainFormView _view;
         private readonly IPrintJobService _printJobService;
 
 
@@ -28,15 +28,24 @@ namespace PrintJobInterceptor.Presentation
         private List<string> _currentPrinterFilter = new List<string>();
         private readonly ILogger<MainFormPresenter> _logger;
 
-        public MainFormPresenter(IMainFormView view, IPrintJobService printJobService, ILogger<MainFormPresenter> logger)
+        public MainFormPresenter(IPrintJobService printJobService, ILogger<MainFormPresenter> logger)
         {
-            _view = view;
+            
             _printJobService = printJobService;
             _logger = logger;
 
             _printJobService.JobSpooling += OnJobReceived;
             _printJobService.JobUpdated += OnJobReceived;
             _printJobService.JobDeleted += OnJobDeleted;
+
+            _uiRefreshTimer = new System.Windows.Forms.Timer { Interval = 1000 };
+            _uiRefreshTimer.Tick += UiRefreshTimer_Tick;
+        }
+
+        public void SetView(IMainFormView view)
+        {
+            _view = view;
+
 
             _view.PrinterFilterChanged += OnPrinterFilterChanged;
 
@@ -80,9 +89,6 @@ namespace PrintJobInterceptor.Presentation
                 ApplyFilters();
             };
 
-
-            _uiRefreshTimer = new System.Windows.Forms.Timer { Interval = 1000 };
-            _uiRefreshTimer.Tick += UiRefreshTimer_Tick;
         }
 
         private void OnPrinterFilterChanged(List<string> selectedPrinters)

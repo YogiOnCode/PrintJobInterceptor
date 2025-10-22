@@ -21,9 +21,7 @@ namespace PrintJobInterceptor
 
         public event Action<List<string>> PrinterFilterChanged;
         private readonly HashSet<string> _selectedPrinters = new HashSet<string>();
-        public MainForm(IPrintJobService printJobService, 
-                        ILogger<MainForm> logger,
-                        ILogger<MainFormPresenter> presenterLogger)
+        public MainForm(MainFormPresenter presenter, ILogger<MainForm> logger)
         {
             InitializeComponent();
             _logger = logger;
@@ -32,8 +30,9 @@ namespace PrintJobInterceptor
             SetupDataGridView(dgvPrintJobs);
             SetupDataGridView(dgvHistoryJobs); 
             SetDoubleBuffering(dgvHistoryJobs, true);
-           
-            _presenter = new MainFormPresenter(this, printJobService, presenterLogger);
+
+            _presenter = presenter;
+            _presenter.SetView(this);
 
             this.Text = string.Empty;
             this.ControlBox = false;

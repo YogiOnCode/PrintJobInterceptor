@@ -16,6 +16,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Siticone.NetCore.UI" Version="2025.10.7" />
   </ItemGroup>
