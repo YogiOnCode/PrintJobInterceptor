@@ -3,6 +3,7 @@ using PrintJobInterceptor.Core.Interfaces;
 using PrintJobInterceptor.Core.Services;
 using PrintJobInterceptor.Presentation;
 using PrintJobInterceptor.UI.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Windows.Forms;
 
@@ -35,6 +36,13 @@ namespace PrintJobInterceptor
 
         private static void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(builder =>
+            {
+                
+                builder.AddConsole();
+                builder.AddDebug();
+            });
+
             if (IS_TEST_MODE) { services.AddSingleton<IPrintJobService, MockPrintJobService>(); }
 
             else { services.AddSingleton<IPrintJobService, PrintJobService>(); }
@@ -42,6 +50,7 @@ namespace PrintJobInterceptor
             
             services.AddTransient<MainFormPresenter>();
             services.AddTransient<IMainFormView, MainForm>();
+            services.AddSingleton<IPrintJobService, PrintJobService>();
         }
     }
 }
