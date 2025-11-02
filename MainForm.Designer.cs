@@ -101,12 +101,13 @@
             tableLayoutPanelMain.Controls.Add(label2, 0, 2);
             tableLayoutPanelMain.Dock = DockStyle.Fill;
             tableLayoutPanelMain.Location = new Point(0, 0);
+            tableLayoutPanelMain.Margin = new Padding(4, 4, 4, 4);
             tableLayoutPanelMain.Name = "tableLayoutPanelMain";
             tableLayoutPanelMain.RowCount = 3;
-            tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
             tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
-            tableLayoutPanelMain.Size = new Size(1184, 761);
+            tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
+            tableLayoutPanelMain.Size = new Size(1480, 951);
             tableLayoutPanelMain.TabIndex = 2;
             // 
             // panelTitleBar
@@ -119,7 +120,7 @@
             panelTitleBar.Location = new Point(0, 0);
             panelTitleBar.Margin = new Padding(0);
             panelTitleBar.Name = "panelTitleBar";
-            panelTitleBar.Size = new Size(1184, 48);
+            panelTitleBar.Size = new Size(1480, 60);
             panelTitleBar.TabIndex = 2;
             // 
             // btnMinimize
@@ -132,16 +133,17 @@
             btnMinimize.IconColor = Color.White;
             btnMinimize.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnMinimize.IconSize = 25;
-            btnMinimize.Location = new Point(1088, 0);
+            btnMinimize.Location = new Point(1360, 0);
+            btnMinimize.Margin = new Padding(4, 4, 4, 4);
             btnMinimize.Name = "btnMinimize";
-            btnMinimize.Size = new Size(48, 48);
+            btnMinimize.Size = new Size(60, 60);
             btnMinimize.TabIndex = 5;
             btnMinimize.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 2;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 40F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Controls.Add(pictureBox1, 0, 0);
             tableLayoutPanel1.Controls.Add(label1, 1, 0);
@@ -151,7 +153,7 @@
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(200, 48);
+            tableLayoutPanel1.Size = new Size(250, 60);
             tableLayoutPanel1.TabIndex = 3;
             // 
             // pictureBox1
@@ -161,7 +163,7 @@
             pictureBox1.Location = new Point(0, 0);
             pictureBox1.Margin = new Padding(0);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(40, 48);
+            pictureBox1.Size = new Size(50, 60);
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
@@ -172,9 +174,10 @@
             label1.Dock = DockStyle.Fill;
             label1.Font = new Font("Segoe UI Variable Display Semib", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
             label1.ForeColor = Color.White;
-            label1.Location = new Point(43, 0);
+            label1.Location = new Point(54, 0);
+            label1.Margin = new Padding(4, 0, 4, 0);
             label1.Name = "label1";
-            label1.Size = new Size(154, 48);
+            label1.Size = new Size(192, 60);
             label1.TabIndex = 1;
             label1.Text = "PrintJob Interceptor";
             label1.TextAlign = ContentAlignment.MiddleCenter;
@@ -189,9 +192,10 @@
             btnClose.IconChar = FontAwesome.Sharp.IconChar.None;
             btnClose.IconColor = Color.FromArgb(32, 32, 32);
             btnClose.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnClose.Location = new Point(1136, 0);
+            btnClose.Location = new Point(1420, 0);
+            btnClose.Margin = new Padding(4, 4, 4, 4);
             btnClose.Name = "btnClose";
-            btnClose.Size = new Size(48, 48);
+            btnClose.Size = new Size(60, 60);
             btnClose.TabIndex = 0;
             btnClose.Text = "X";
             btnClose.UseVisualStyleBackColor = true;
@@ -200,10 +204,10 @@
             // 
             panelContent.Controls.Add(MainSplitContainer);
             panelContent.Dock = DockStyle.Fill;
-            panelContent.Location = new Point(0, 48);
+            panelContent.Location = new Point(0, 60);
             panelContent.Margin = new Padding(0);
             panelContent.Name = "panelContent";
-            panelContent.Size = new Size(1184, 683);
+            panelContent.Size = new Size(1480, 853);
             panelContent.TabIndex = 3;
             // 
             // MainSplitContainer
@@ -221,14 +225,16 @@
             // 
             MainSplitContainer.Panel2.Controls.Add(detailsSplitContainer);
             MainSplitContainer.Panel2MinSize = 200;
-            MainSplitContainer.Size = new Size(1184, 683);
-            MainSplitContainer.SplitterDistance = 973;
+            MainSplitContainer.Size = new Size(1480, 853);
+            MainSplitContainer.SplitterDistance = 1216;
+            MainSplitContainer.SplitterWidth = 5;
             MainSplitContainer.TabIndex = 0;
             // 
             // contentSplitContainer1
             // 
             contentSplitContainer1.Dock = DockStyle.Fill;
             contentSplitContainer1.Location = new Point(0, 0);
+            contentSplitContainer1.Margin = new Padding(4, 4, 4, 4);
             contentSplitContainer1.Name = "contentSplitContainer1";
             // 
             // contentSplitContainer1.Panel1
@@ -238,8 +244,9 @@
             // contentSplitContainer1.Panel2
             // 
             contentSplitContainer1.Panel2.Controls.Add(tabControlContent);
-            contentSplitContainer1.Size = new Size(973, 683);
-            contentSplitContainer1.SplitterDistance = 233;
+            contentSplitContainer1.Size = new Size(1216, 853);
+            contentSplitContainer1.SplitterDistance = 291;
+            contentSplitContainer1.SplitterWidth = 5;
             contentSplitContainer1.TabIndex = 0;
             // 
             // panelPrinters
@@ -248,8 +255,9 @@
             panelPrinters.Controls.Add(dropDownPrinters);
             panelPrinters.Dock = DockStyle.Fill;
             panelPrinters.Location = new Point(0, 0);
+            panelPrinters.Margin = new Padding(4, 4, 4, 4);
             panelPrinters.Name = "panelPrinters";
-            panelPrinters.Size = new Size(233, 683);
+            panelPrinters.Size = new Size(291, 853);
             panelPrinters.TabIndex = 0;
             // 
             // dropDownPrinters
@@ -272,6 +280,7 @@
             dropDownPrinters.IsReadonly = false;
             dropDownPrinters.ItemHeight = 30;
             dropDownPrinters.Location = new Point(0, 0);
+            dropDownPrinters.Margin = new Padding(4, 4, 4, 4);
             dropDownPrinters.MaxDropDownItems = 8;
             dropDownPrinters.Name = "dropDownPrinters";
             dropDownPrinters.PlaceholderColor = Color.Gainsboro;
@@ -282,7 +291,7 @@
             dropDownPrinters.SelectedItemBackColor = Color.FromArgb(0, 120, 215);
             dropDownPrinters.SelectedItemTextColor = Color.White;
             dropDownPrinters.SelectedValue = null;
-            dropDownPrinters.Size = new Size(233, 67);
+            dropDownPrinters.Size = new Size(291, 84);
             dropDownPrinters.TabIndex = 0;
             dropDownPrinters.Text = "siticoneDropdown1";
             dropDownPrinters.UltraFastPerformance = true;
@@ -324,7 +333,7 @@
             tabControlContent.SelectedTextColor = Color.White;
             tabControlContent.SeparatorLineColor = Color.FromArgb(0, 0, 0);
             tabControlContent.SeparatorLineOpacity = 0.4F;
-            tabControlContent.Size = new Size(736, 683);
+            tabControlContent.Size = new Size(920, 853);
             tabControlContent.SizeMode = TabSizeMode.Fixed;
             tabControlContent.TabImageSize = 22;
             tabControlContent.TabImageTextGap = 6;
@@ -339,7 +348,7 @@
             activeTab.Location = new Point(4, 44);
             activeTab.Margin = new Padding(0);
             activeTab.Name = "activeTab";
-            activeTab.Size = new Size(728, 635);
+            activeTab.Size = new Size(912, 805);
             tabControlContent.SetTabImage(activeTab, null);
             activeTab.TabIndex = 0;
             activeTab.Text = "Active";
@@ -354,16 +363,17 @@
             dgvPrintJobs.Margin = new Padding(0);
             dgvPrintJobs.Name = "dgvPrintJobs";
             dgvPrintJobs.RowHeadersWidth = 51;
-            dgvPrintJobs.Size = new Size(728, 635);
+            dgvPrintJobs.Size = new Size(912, 805);
             dgvPrintJobs.TabIndex = 0;
             // 
             // historyTab
             // 
             historyTab.Controls.Add(tableLayoutPanel2);
             historyTab.Location = new Point(4, 44);
+            historyTab.Margin = new Padding(4, 4, 4, 4);
             historyTab.Name = "historyTab";
-            historyTab.Padding = new Padding(3);
-            historyTab.Size = new Size(728, 635);
+            historyTab.Padding = new Padding(4, 4, 4, 4);
+            historyTab.Size = new Size(912, 806);
             tabControlContent.SetTabImage(historyTab, null);
             historyTab.TabIndex = 1;
             historyTab.Text = "History";
@@ -377,23 +387,24 @@
             tableLayoutPanel2.Controls.Add(dgvHistoryJobs, 0, 1);
             tableLayoutPanel2.Controls.Add(btnRefresh, 0, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
-            tableLayoutPanel2.Location = new Point(3, 3);
+            tableLayoutPanel2.Location = new Point(4, 4);
             tableLayoutPanel2.Margin = new Padding(0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 2;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 37F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 46F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(722, 629);
+            tableLayoutPanel2.Size = new Size(904, 798);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // dgvHistoryJobs
             // 
             dgvHistoryJobs.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvHistoryJobs.Dock = DockStyle.Fill;
-            dgvHistoryJobs.Location = new Point(0, 37);
+            dgvHistoryJobs.Location = new Point(0, 46);
             dgvHistoryJobs.Margin = new Padding(0);
             dgvHistoryJobs.Name = "dgvHistoryJobs";
-            dgvHistoryJobs.Size = new Size(722, 592);
+            dgvHistoryJobs.RowHeadersWidth = 51;
+            dgvHistoryJobs.Size = new Size(904, 752);
             dgvHistoryJobs.TabIndex = 0;
             // 
             // btnRefresh
@@ -405,9 +416,10 @@
             btnRefresh.IconColor = Color.White;
             btnRefresh.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnRefresh.IconSize = 30;
-            btnRefresh.Location = new Point(674, 3);
+            btnRefresh.Location = new Point(844, 4);
+            btnRefresh.Margin = new Padding(4, 4, 4, 4);
             btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(45, 31);
+            btnRefresh.Size = new Size(56, 38);
             btnRefresh.TabIndex = 1;
             btnRefresh.UseVisualStyleBackColor = true;
             // 
@@ -415,6 +427,7 @@
             // 
             detailsSplitContainer.Dock = DockStyle.Fill;
             detailsSplitContainer.Location = new Point(0, 0);
+            detailsSplitContainer.Margin = new Padding(4, 4, 4, 4);
             detailsSplitContainer.Name = "detailsSplitContainer";
             detailsSplitContainer.Orientation = Orientation.Horizontal;
             // 
@@ -425,13 +438,15 @@
             // detailsSplitContainer.Panel2
             // 
             detailsSplitContainer.Panel2.Controls.Add(pnlButtons);
-            detailsSplitContainer.Size = new Size(207, 683);
-            detailsSplitContainer.SplitterDistance = 468;
+            detailsSplitContainer.Size = new Size(259, 853);
+            detailsSplitContainer.SplitterDistance = 584;
+            detailsSplitContainer.SplitterWidth = 5;
             detailsSplitContainer.TabIndex = 0;
             // 
             // panelDetails
             // 
             panelDetails.AcrylicTintColor = Color.FromArgb(128, 255, 255, 255);
+            panelDetails.AutoScroll = true;
             panelDetails.BackColor = Color.FromArgb(36, 36, 36);
             panelDetails.BorderAlignment = System.Drawing.Drawing2D.PenAlignment.Center;
             panelDetails.BorderDashPattern = null;
@@ -463,7 +478,8 @@
     0.5F,
     1F
     };
-            panelDetails.Location = new Point(6, 31);
+            panelDetails.Location = new Point(8, 39);
+            panelDetails.Margin = new Padding(4, 4, 4, 4);
             panelDetails.Name = "panelDetails";
             panelDetails.PatternStyle = System.Drawing.Drawing2D.HatchStyle.Max;
             panelDetails.RippleAlpha = 50;
@@ -472,7 +488,7 @@
             panelDetails.RippleMaxSize = 600F;
             panelDetails.RippleSpeed = 15F;
             panelDetails.ShowBorder = true;
-            panelDetails.Size = new Size(189, 388);
+            panelDetails.Size = new Size(236, 485);
             panelDetails.TabIndex = 1;
             panelDetails.TabStop = true;
             panelDetails.TrackSystemTheme = false;
@@ -485,14 +501,15 @@
             // 
             tableLayoutPanel3.ColumnCount = 2;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 23F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 29F));
             tableLayoutPanel3.Controls.Add(lblDetailsGlobalStatus, 0, 0);
             tableLayoutPanel3.Controls.Add(iconStatus, 1, 0);
-            tableLayoutPanel3.Location = new Point(14, 81);
+            tableLayoutPanel3.Location = new Point(18, 101);
+            tableLayoutPanel3.Margin = new Padding(4, 4, 4, 4);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(139, 24);
+            tableLayoutPanel3.Size = new Size(174, 30);
             tableLayoutPanel3.TabIndex = 6;
             // 
             // lblDetailsGlobalStatus
@@ -501,9 +518,10 @@
             lblDetailsGlobalStatus.Dock = DockStyle.Fill;
             lblDetailsGlobalStatus.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
             lblDetailsGlobalStatus.ForeColor = Color.White;
-            lblDetailsGlobalStatus.Location = new Point(3, 0);
+            lblDetailsGlobalStatus.Location = new Point(4, 0);
+            lblDetailsGlobalStatus.Margin = new Padding(4, 0, 4, 0);
             lblDetailsGlobalStatus.Name = "lblDetailsGlobalStatus";
-            lblDetailsGlobalStatus.Size = new Size(110, 24);
+            lblDetailsGlobalStatus.Size = new Size(137, 30);
             lblDetailsGlobalStatus.TabIndex = 1;
             // 
             // iconStatus
@@ -514,10 +532,11 @@
             iconStatus.IconChar = FontAwesome.Sharp.IconChar.Circle;
             iconStatus.IconColor = Color.Transparent;
             iconStatus.IconFont = FontAwesome.Sharp.IconFont.Solid;
-            iconStatus.IconSize = 17;
-            iconStatus.Location = new Point(119, 3);
+            iconStatus.IconSize = 21;
+            iconStatus.Location = new Point(149, 4);
+            iconStatus.Margin = new Padding(4, 4, 4, 4);
             iconStatus.Name = "iconStatus";
-            iconStatus.Size = new Size(17, 18);
+            iconStatus.Size = new Size(21, 22);
             iconStatus.TabIndex = 2;
             iconStatus.TabStop = false;
             // 
@@ -526,9 +545,10 @@
             lblIndividualJobNames.AutoSize = true;
             lblIndividualJobNames.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
             lblIndividualJobNames.ForeColor = Color.White;
-            lblIndividualJobNames.Location = new Point(14, 224);
+            lblIndividualJobNames.Location = new Point(18, 280);
+            lblIndividualJobNames.Margin = new Padding(4, 0, 4, 0);
             lblIndividualJobNames.Name = "lblIndividualJobNames";
-            lblIndividualJobNames.Size = new Size(0, 17);
+            lblIndividualJobNames.Size = new Size(0, 22);
             lblIndividualJobNames.TabIndex = 5;
             // 
             // lblDetailsJobCount
@@ -536,9 +556,10 @@
             lblDetailsJobCount.AutoSize = true;
             lblDetailsJobCount.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
             lblDetailsJobCount.ForeColor = Color.White;
-            lblDetailsJobCount.Location = new Point(14, 179);
+            lblDetailsJobCount.Location = new Point(18, 224);
+            lblDetailsJobCount.Margin = new Padding(4, 0, 4, 0);
             lblDetailsJobCount.Name = "lblDetailsJobCount";
-            lblDetailsJobCount.Size = new Size(0, 17);
+            lblDetailsJobCount.Size = new Size(0, 22);
             lblDetailsJobCount.TabIndex = 3;
             // 
             // lblDetailsGroupingStatus
@@ -546,9 +567,10 @@
             lblDetailsGroupingStatus.AutoSize = true;
             lblDetailsGroupingStatus.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold);
             lblDetailsGroupingStatus.ForeColor = Color.White;
-            lblDetailsGroupingStatus.Location = new Point(14, 130);
+            lblDetailsGroupingStatus.Location = new Point(18, 162);
+            lblDetailsGroupingStatus.Margin = new Padding(4, 0, 4, 0);
             lblDetailsGroupingStatus.Name = "lblDetailsGroupingStatus";
-            lblDetailsGroupingStatus.Size = new Size(0, 17);
+            lblDetailsGroupingStatus.Size = new Size(0, 22);
             lblDetailsGroupingStatus.TabIndex = 2;
             // 
             // lblDetailsHeader
@@ -556,9 +578,10 @@
             lblDetailsHeader.AutoSize = true;
             lblDetailsHeader.Font = new Font("Segoe UI Variable Display Semib", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 238);
             lblDetailsHeader.ForeColor = Color.White;
-            lblDetailsHeader.Location = new Point(14, 36);
+            lblDetailsHeader.Location = new Point(18, 45);
+            lblDetailsHeader.Margin = new Padding(4, 0, 4, 0);
             lblDetailsHeader.Name = "lblDetailsHeader";
-            lblDetailsHeader.Size = new Size(0, 17);
+            lblDetailsHeader.Size = new Size(0, 22);
             lblDetailsHeader.TabIndex = 0;
             // 
             // pnlButtons
@@ -568,8 +591,9 @@
             pnlButtons.Controls.Add(buttonResume);
             pnlButtons.Dock = DockStyle.Fill;
             pnlButtons.Location = new Point(0, 0);
+            pnlButtons.Margin = new Padding(4, 4, 4, 4);
             pnlButtons.Name = "pnlButtons";
-            pnlButtons.Size = new Size(207, 211);
+            pnlButtons.Size = new Size(259, 264);
             pnlButtons.TabIndex = 0;
             // 
             // buttonCancel
@@ -621,8 +645,9 @@
             buttonCancel.IsReadOnly = false;
             buttonCancel.IsToggleButton = false;
             buttonCancel.IsToggled = false;
-            buttonCancel.Location = new Point(3, 129);
+            buttonCancel.Location = new Point(4, 161);
             buttonCancel.LongPressDurationMS = 1000;
+            buttonCancel.Margin = new Padding(4, 4, 4, 4);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.NormalFontStyle = FontStyle.Regular;
             buttonCancel.ParticleColor = Color.FromArgb(200, 200, 200);
@@ -639,7 +664,7 @@
             buttonCancel.ShadowOffset = new Point(0, 2);
             buttonCancel.ShakeDuration = 500;
             buttonCancel.ShakeIntensity = 5;
-            buttonCancel.Size = new Size(171, 57);
+            buttonCancel.Size = new Size(214, 71);
             buttonCancel.TabIndex = 1;
             buttonCancel.Text = "Cancel";
             buttonCancel.TextAlign = ContentAlignment.MiddleCenter;
@@ -697,8 +722,9 @@
             buttonPause.IsReadOnly = false;
             buttonPause.IsToggleButton = false;
             buttonPause.IsToggled = false;
-            buttonPause.Location = new Point(3, 3);
+            buttonPause.Location = new Point(4, 4);
             buttonPause.LongPressDurationMS = 1000;
+            buttonPause.Margin = new Padding(4, 4, 4, 4);
             buttonPause.Name = "buttonPause";
             buttonPause.NormalFontStyle = FontStyle.Regular;
             buttonPause.ParticleColor = Color.FromArgb(200, 200, 200);
@@ -715,7 +741,7 @@
             buttonPause.ShadowOffset = new Point(0, 2);
             buttonPause.ShakeDuration = 500;
             buttonPause.ShakeIntensity = 5;
-            buttonPause.Size = new Size(171, 57);
+            buttonPause.Size = new Size(214, 71);
             buttonPause.TabIndex = 2;
             buttonPause.Text = "Pause";
             buttonPause.TextAlign = ContentAlignment.MiddleCenter;
@@ -773,8 +799,9 @@
             buttonResume.IsReadOnly = false;
             buttonResume.IsToggleButton = false;
             buttonResume.IsToggled = false;
-            buttonResume.Location = new Point(3, 66);
+            buttonResume.Location = new Point(4, 82);
             buttonResume.LongPressDurationMS = 1000;
+            buttonResume.Margin = new Padding(4, 4, 4, 4);
             buttonResume.Name = "buttonResume";
             buttonResume.NormalFontStyle = FontStyle.Regular;
             buttonResume.ParticleColor = Color.FromArgb(200, 200, 200);
@@ -791,7 +818,7 @@
             buttonResume.ShadowOffset = new Point(0, 2);
             buttonResume.ShakeDuration = 500;
             buttonResume.ShakeIntensity = 5;
-            buttonResume.Size = new Size(171, 57);
+            buttonResume.Size = new Size(214, 71);
             buttonResume.TabIndex = 0;
             buttonResume.Text = "Resume";
             buttonResume.TextAlign = ContentAlignment.MiddleCenter;
@@ -805,25 +832,26 @@
             label2.AutoSize = true;
             label2.Dock = DockStyle.Right;
             label2.ForeColor = Color.White;
-            label2.Location = new Point(1118, 731);
+            label2.Location = new Point(1396, 913);
+            label2.Margin = new Padding(4, 0, 4, 0);
             label2.Name = "label2";
-            label2.Size = new Size(63, 30);
+            label2.Size = new Size(80, 38);
             label2.TabIndex = 4;
             label2.Text = "Version 1.0";
             label2.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.FromArgb(32, 32, 32);
-            ClientSize = new Size(1184, 761);
+            ClientSize = new Size(1480, 951);
             Controls.Add(tableLayoutPanelMain);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(3, 2, 3, 2);
-            MinimumSize = new Size(1100, 700);
+            Margin = new Padding(4, 2, 4, 2);
+            MinimumSize = new Size(1375, 875);
             Name = "MainForm";
             Text = "Form1";
             tableLayoutPanelMain.ResumeLayout(false);

@@ -218,7 +218,10 @@ namespace PrintJobInterceptor.Presentation
 
             if (isTerminal)
             {
+                group.GroupingStatus = "Finalized";
+
                 _logger.LogInformation("Group {GroupKey} has reached terminal status: {Status}. Archiving and removing.", dictionaryKey, group.Status);
+              
                 ArchiveGroup(group);
               
                 _jobGroups.Remove(dictionaryKey);

@@ -25,7 +25,7 @@ namespace PrintJobInterceptor.Core.Models
         public long TotalSizeInBytes => Jobs.Sum(j => j.SizeInBytes);
 
         [JsonIgnore]
-        public string GroupingStatus { get; set; } = "Grouping";
+        public string GroupingStatus { get; set; }
 
         public int JobCount => Jobs.Count;
         public string Status
