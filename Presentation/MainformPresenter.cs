@@ -155,16 +155,13 @@ namespace PrintJobInterceptor.Presentation
                     }
                     else
                     {
-
+                        string dictionaryKey = Guid.NewGuid().ToString();
                         var newGroup = new PrintJobGroup(logicalGroupKey);
                         newGroup.Jobs.Add(job);
                         newGroup.LastActivity = DateTime.Now;
                         newGroup.GroupingStatus = "Grouping";
 
-                        if (!_jobGroups.ContainsKey(logicalGroupKey))
-                        {
-                            _jobGroups.Add(logicalGroupKey, newGroup);
-                        }
+                        _jobGroups.Add(dictionaryKey, newGroup);
 
                     }
                 }
