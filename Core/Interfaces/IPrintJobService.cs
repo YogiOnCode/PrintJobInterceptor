@@ -1,4 +1,5 @@
 ﻿using PrintJobInterceptor.Core.Models;
+using PrintJobInterceptor.Core.Services.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +20,6 @@ namespace PrintJobInterceptor.Core.Interfaces
         void ResumeJob(int jobId, string printerName);
         void CancelJob(int jobId, string printerName);
         bool DoesJobExist(int jobId, string printerName);
+        void RunTest(TestScenario scenario);
     }
 }

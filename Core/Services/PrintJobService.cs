@@ -1,9 +1,10 @@
-﻿using System.Diagnostics;
-using System.Management;
-using System.Runtime.InteropServices;
+﻿using Microsoft.Extensions.Logging;
 using PrintJobInterceptor.Core.Interfaces;
 using PrintJobInterceptor.Core.Models;
-using Microsoft.Extensions.Logging;
+using PrintJobInterceptor.Core.Services.Helper;
+using System.Diagnostics;
+using System.Management;
+using System.Runtime.InteropServices;
 
 namespace PrintJobInterceptor.Core.Services
 {
@@ -288,9 +289,12 @@ namespace PrintJobInterceptor.Core.Services
 
 
 
-        public void SimulateGroupedJob() { }
-        
-      
+     
+
+        public void RunTest(TestScenario scenario)
+        {
+            _logger.LogWarning("RunTest called on real PrintJobService. Ignoring.");
+        }
         public void Dispose()
         {
             StopMonitoring();

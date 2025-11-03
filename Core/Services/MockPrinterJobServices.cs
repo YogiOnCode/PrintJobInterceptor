@@ -2,24 +2,14 @@
 using PrintJobInterceptor.Core.Models;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using PrintJobInterceptor.Core.Services.Helper;
 
 namespace PrintJobInterceptor.Core.Services
 {
-    public enum TestScenario
-    {
-      
-        InteractiveTest,
-        GroupedJobWithTimeout,
-        SequentialJobNames,
-
-        SingleJobs,
-        PausingJob,
-        CancellingJob,
-        ErrorJob
-    }
-
+  
     public class MockPrintJobService : IPrintJobService, IDisposable
     {
         public event Action<PrintJob> JobSpooling;
@@ -59,11 +49,11 @@ namespace PrintJobInterceptor.Core.Services
             }
         }
 
-        public void StartMonitoring() // Change the TestScenerario here to test different scenarios
+        public void StartMonitoring() 
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            RunTest(TestScenario.InteractiveTest, _cancellationTokenSource.Token);
-          
+            Debug.WriteLine("(Mock) Monitoring started. Waiting for UI to trigger a test.");
+
         }
 
         public void StopMonitoring()
@@ -72,8 +62,16 @@ namespace PrintJobInterceptor.Core.Services
             _cancellationTokenSource?.Dispose();
             Console.WriteLine("(Mock) Monitoring stopped.");
         }
+        public void RunTest(TestScenario scenario)
+        {
+            StopMonitoring();
 
-        public async void RunTest(TestScenario scenario, CancellationToken token)
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            _ = RunTestInternal(scenario, _cancellationTokenSource.Token);
+        }
+
+        public async Task RunTestInternal(TestScenario scenario, CancellationToken token)
         {
             try
             {
@@ -91,12 +89,7 @@ namespace PrintJobInterceptor.Core.Services
                     case TestScenario.SequentialJobNames:
                         await SimulateSequentialJobNames(token);
                         break;
-                    case TestScenario.PausingJob:
-                        await SimulatePausingJob("Financials.xlsx", "Bob", token);
-                        break;
-                    case TestScenario.CancellingJob:
-                        await SimulateCancellingJob("Temp-Document.docx", "Charlie", token);
-                        break;
+                   
                     case TestScenario.SingleJobs:
                     default:
                         await SimulateSingleJobs(2, token);
@@ -109,7 +102,6 @@ namespace PrintJobInterceptor.Core.Services
             }
         }
 
-       
         private async Task SimulateInteractiveTest(int jobCount, CancellationToken token)
         {
             Console.WriteLine(" Interactive Test Scenario" );
@@ -129,7 +121,7 @@ namespace PrintJobInterceptor.Core.Services
         private async Task SimulateGroupedJobWithTimeout(int jobCount, CancellationToken token)
         {
             Console.WriteLine(" Running Grouped Job w/ Timeout Scenario");
-            string docName = $"Quarterly-Report-{_random.Next(100, 999)}.pdf";
+            string docName = $"Report{_random.Next(100, 999)}.pdf";
 
           
             for (int i = 1; i <= jobCount; i++)
@@ -140,11 +132,11 @@ namespace PrintJobInterceptor.Core.Services
             }
 
           
-            Console.WriteLine($"(Mock) Waiting for {GROUPING_TIMEOUT_MS}ms timeout...");
+            Debug.WriteLine($"(Mock) Waiting for {GROUPING_TIMEOUT_MS}ms timeout...");
             await Task.Delay(GROUPING_TIMEOUT_MS + 2000, token);
 
         
-            Console.WriteLine("(Mock) Sending one more job after timeout.");
+            Debug.WriteLine("(Mock) Sending one more job after timeout.");
             var lateJob = CreateJob(docName, "Alice");
             SimulateJobLifecycle(lateJob, token);
         }
@@ -155,32 +147,23 @@ namespace PrintJobInterceptor.Core.Services
             string baseName = "MyReport";
 
          
-            var job1 = CreateJob($"{baseName}_001.pdf", "Bob");
+            var job1 = CreateJob($"{baseName}_check_001.pdf", "Bob");
             SimulateJobLifecycle(job1, token);
             await Task.Delay(1500, token);
 
           
-            var job2 = CreateJob($"{baseName}_002.pdf", "Bob");
-            SimulateJobLifecycle(job2, token, pauseDurationMs: 4000);
-            await Task.Delay(1500, token);
+            var job2 = CreateJob($"{baseName}_check_002.pdf", "Bob");
+            SimulateJobLifecycle(job2, token, pauseDurationMs: 1000);
+            await Task.Delay( 3500, token);
 
           
-            var job3 = CreateJob($"{baseName} (Part 3).pdf", "Bob");
+            var job3 = CreateJob($"{baseName} (Part 1).pdf", "Bob");
             SimulateJobLifecycle(job3, token, cancelJob: true);
-        }
+            await Task.Delay(1500, token);
 
-     
-
-        private async Task SimulatePausingJob(string docName, string user, CancellationToken token)
-        {
-            var job = CreateJob(docName, user);
-            await SimulateJobLifecycle(job, token, pauseDurationMs: 5000);
-        }
-
-        private async Task SimulateCancellingJob(string docName, string user, CancellationToken token)
-        {
-            var job = CreateJob(docName, user);
-            await SimulateJobLifecycle(job, token, cancelJob: true);
+            var job4 = CreateJob($"{baseName} (Part 2).pdf", "Bob");
+            SimulateJobLifecycle(job4, token, cancelJob: true);
+            
         }
 
         private async Task SimulateSingleJobs(int count, CancellationToken token)
@@ -212,9 +195,9 @@ namespace PrintJobInterceptor.Core.Services
                 }
 
                 int progress = 0;
-                int totalDuration = 30000; 
+                int totalDuration = lifecycleDurationMs;
 
-              
+
                 while (progress < totalDuration && !token.IsCancellationRequested)
                 {
                     if (!_activeSimulatedJobs.TryGetValue(job.JobId, out var currentJobState)) break;
@@ -270,7 +253,8 @@ namespace PrintJobInterceptor.Core.Services
                 Status = "Unknown",
                 PageCount = pageCount ?? _random.Next(1, 20),
                 PrinterName = "Mock Printer",
-                SubmittedAt = DateTime.Now
+                SubmittedAt = DateTime.Now,
+                DocumentType = docName.Contains("pdf") ? "PDF" : (docName.Contains("docx") ? "Word" : "Generic")
             };
         }
         public bool DoesJobExist(int jobId, string printerName)
