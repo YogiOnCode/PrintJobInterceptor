@@ -1,15 +1,16 @@
-﻿using PrintJobInterceptor.Core.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PrintJobInterceptor.Core.Interfaces;
 using PrintJobInterceptor.Core.Models;
+using PrintJobInterceptor.Core.Services.Helper;
 using PrintJobInterceptor.UI.Interfaces;
-using System.Text.RegularExpressions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using System.Runtime.Intrinsics.X86;
-using Newtonsoft.Json;
 using System.IO;
-using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace PrintJobInterceptor.Presentation
 {
@@ -324,6 +325,17 @@ namespace PrintJobInterceptor.Presentation
             _logger.LogInformation("Presenter stopping... Stopping monitor and UI refresh timer.");
             _uiRefreshTimer.Stop();
             _printJobService.StopMonitoring();
+        }
+        public void RunTestRequested(TestScenario scenario)
+        {
+            _logger.LogInformation("Test run requested: {Scenario}. Clearing UI and starting.", scenario);
+            lock (_lock)
+            {
+                _jobGroups.Clear();
+            }
+            ApplyFilters(); 
+
+            _printJobService.RunTest(scenario);
         }
     }
 }

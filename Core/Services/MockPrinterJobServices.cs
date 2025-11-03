@@ -5,19 +5,11 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using PrintJobInterceptor.Core.Services.Helper;
 
 namespace PrintJobInterceptor.Core.Services
 {
-    public enum TestScenario
-    {
-      
-        InteractiveTest,
-        GroupedJobWithTimeout,
-        SequentialJobNames,
-        SingleJobs
-
-    }
-   
+  
     public class MockPrintJobService : IPrintJobService, IDisposable
     {
         public event Action<PrintJob> JobSpooling;
@@ -57,11 +49,11 @@ namespace PrintJobInterceptor.Core.Services
             }
         }
 
-        public void StartMonitoring() // Change the TestScenerario here to test different scenarios
+        public void StartMonitoring() 
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            RunTest(TestScenario.SequentialJobNames, _cancellationTokenSource.Token);
-          
+            Debug.WriteLine("(Mock) Monitoring started. Waiting for UI to trigger a test.");
+
         }
 
         public void StopMonitoring()
@@ -70,8 +62,16 @@ namespace PrintJobInterceptor.Core.Services
             _cancellationTokenSource?.Dispose();
             Console.WriteLine("(Mock) Monitoring stopped.");
         }
+        public void RunTest(TestScenario scenario)
+        {
+            StopMonitoring();
 
-        public async void RunTest(TestScenario scenario, CancellationToken token)
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            _ = RunTestInternal(scenario, _cancellationTokenSource.Token);
+        }
+
+        public async Task RunTestInternal(TestScenario scenario, CancellationToken token)
         {
             try
             {
@@ -253,7 +253,8 @@ namespace PrintJobInterceptor.Core.Services
                 Status = "Unknown",
                 PageCount = pageCount ?? _random.Next(1, 20),
                 PrinterName = "Mock Printer",
-                SubmittedAt = DateTime.Now
+                SubmittedAt = DateTime.Now,
+                DocumentType = docName.Contains("pdf") ? "PDF" : (docName.Contains("docx") ? "Word" : "Generic")
             };
         }
         public bool DoesJobExist(int jobId, string printerName)

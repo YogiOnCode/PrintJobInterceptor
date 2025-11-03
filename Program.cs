@@ -1,12 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PrintJobInterceptor.Core.Interfaces;
 using PrintJobInterceptor.Core.Services;
+using PrintJobInterceptor.Core.Services.Helper;
 using PrintJobInterceptor.Presentation;
 using PrintJobInterceptor.UI.Interfaces;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Windows.Forms;
-using Serilog;
 
 namespace PrintJobInterceptor
 {
@@ -31,7 +32,19 @@ namespace PrintJobInterceptor
 
             if (mainForm == null)
                 throw new InvalidOperationException("IMainFormView resolve returned null or is not a Form.");
-
+            if (IS_TEST_MODE)
+            {
+                try
+                {
+                    var testForm = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions
+                            .GetRequiredService<TestScenarioForm>(serviceProvider);
+                    testForm.Show();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to load Test Scenario form: {ex.Message}", "Test Mode Error");
+                }
+            }
             Application.Run(mainForm);
         }
 
@@ -64,7 +77,11 @@ namespace PrintJobInterceptor
             else { services.AddSingleton<IPrintJobService, PrintJobService>(); }
 
             services.AddTransient<IMainFormView, MainForm>();
-            services.AddTransient<MainFormPresenter>();
+            services.AddSingleton<MainFormPresenter>();
+            if (IS_TEST_MODE)
+            {
+                services.AddTransient<TestScenarioForm>();
+            }
 
 
         }

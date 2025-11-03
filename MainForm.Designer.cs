@@ -101,7 +101,7 @@
             tableLayoutPanelMain.Controls.Add(label2, 0, 2);
             tableLayoutPanelMain.Dock = DockStyle.Fill;
             tableLayoutPanelMain.Location = new Point(0, 0);
-            tableLayoutPanelMain.Margin = new Padding(4, 4, 4, 4);
+            tableLayoutPanelMain.Margin = new Padding(4);
             tableLayoutPanelMain.Name = "tableLayoutPanelMain";
             tableLayoutPanelMain.RowCount = 3;
             tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
@@ -134,7 +134,7 @@
             btnMinimize.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnMinimize.IconSize = 25;
             btnMinimize.Location = new Point(1360, 0);
-            btnMinimize.Margin = new Padding(4, 4, 4, 4);
+            btnMinimize.Margin = new Padding(4);
             btnMinimize.Name = "btnMinimize";
             btnMinimize.Size = new Size(60, 60);
             btnMinimize.TabIndex = 5;
@@ -193,7 +193,7 @@
             btnClose.IconColor = Color.FromArgb(32, 32, 32);
             btnClose.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnClose.Location = new Point(1420, 0);
-            btnClose.Margin = new Padding(4, 4, 4, 4);
+            btnClose.Margin = new Padding(4);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(60, 60);
             btnClose.TabIndex = 0;
@@ -234,7 +234,7 @@
             // 
             contentSplitContainer1.Dock = DockStyle.Fill;
             contentSplitContainer1.Location = new Point(0, 0);
-            contentSplitContainer1.Margin = new Padding(4, 4, 4, 4);
+            contentSplitContainer1.Margin = new Padding(4);
             contentSplitContainer1.Name = "contentSplitContainer1";
             // 
             // contentSplitContainer1.Panel1
@@ -255,7 +255,7 @@
             panelPrinters.Controls.Add(dropDownPrinters);
             panelPrinters.Dock = DockStyle.Fill;
             panelPrinters.Location = new Point(0, 0);
-            panelPrinters.Margin = new Padding(4, 4, 4, 4);
+            panelPrinters.Margin = new Padding(4);
             panelPrinters.Name = "panelPrinters";
             panelPrinters.Size = new Size(291, 853);
             panelPrinters.TabIndex = 0;
@@ -280,7 +280,7 @@
             dropDownPrinters.IsReadonly = false;
             dropDownPrinters.ItemHeight = 30;
             dropDownPrinters.Location = new Point(0, 0);
-            dropDownPrinters.Margin = new Padding(4, 4, 4, 4);
+            dropDownPrinters.Margin = new Padding(4);
             dropDownPrinters.MaxDropDownItems = 8;
             dropDownPrinters.Name = "dropDownPrinters";
             dropDownPrinters.PlaceholderColor = Color.Gainsboro;
@@ -370,10 +370,10 @@
             // 
             historyTab.Controls.Add(tableLayoutPanel2);
             historyTab.Location = new Point(4, 44);
-            historyTab.Margin = new Padding(4, 4, 4, 4);
+            historyTab.Margin = new Padding(4);
             historyTab.Name = "historyTab";
-            historyTab.Padding = new Padding(4, 4, 4, 4);
-            historyTab.Size = new Size(912, 806);
+            historyTab.Padding = new Padding(4);
+            historyTab.Size = new Size(912, 805);
             tabControlContent.SetTabImage(historyTab, null);
             historyTab.TabIndex = 1;
             historyTab.Text = "History";
@@ -393,7 +393,7 @@
             tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 46F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(904, 798);
+            tableLayoutPanel2.Size = new Size(904, 797);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // dgvHistoryJobs
@@ -404,7 +404,7 @@
             dgvHistoryJobs.Margin = new Padding(0);
             dgvHistoryJobs.Name = "dgvHistoryJobs";
             dgvHistoryJobs.RowHeadersWidth = 51;
-            dgvHistoryJobs.Size = new Size(904, 752);
+            dgvHistoryJobs.Size = new Size(904, 751);
             dgvHistoryJobs.TabIndex = 0;
             // 
             // btnRefresh
@@ -417,7 +417,7 @@
             btnRefresh.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnRefresh.IconSize = 30;
             btnRefresh.Location = new Point(844, 4);
-            btnRefresh.Margin = new Padding(4, 4, 4, 4);
+            btnRefresh.Margin = new Padding(4);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(56, 38);
             btnRefresh.TabIndex = 1;
@@ -427,7 +427,7 @@
             // 
             detailsSplitContainer.Dock = DockStyle.Fill;
             detailsSplitContainer.Location = new Point(0, 0);
-            detailsSplitContainer.Margin = new Padding(4, 4, 4, 4);
+            detailsSplitContainer.Margin = new Padding(4);
             detailsSplitContainer.Name = "detailsSplitContainer";
             detailsSplitContainer.Orientation = Orientation.Horizontal;
             // 
@@ -479,7 +479,7 @@
     1F
     };
             panelDetails.Location = new Point(8, 39);
-            panelDetails.Margin = new Padding(4, 4, 4, 4);
+            panelDetails.Margin = new Padding(4);
             panelDetails.Name = "panelDetails";
             panelDetails.PatternStyle = System.Drawing.Drawing2D.HatchStyle.Max;
             panelDetails.RippleAlpha = 50;
@@ -496,6 +496,7 @@
             panelDetails.UseMultiGradient = false;
             panelDetails.UsePatternTexture = false;
             panelDetails.UseRadialGradient = false;
+            panelDetails.Visible = false;
             // 
             // tableLayoutPanel3
             // 
@@ -505,7 +506,7 @@
             tableLayoutPanel3.Controls.Add(lblDetailsGlobalStatus, 0, 0);
             tableLayoutPanel3.Controls.Add(iconStatus, 1, 0);
             tableLayoutPanel3.Location = new Point(18, 101);
-            tableLayoutPanel3.Margin = new Padding(4, 4, 4, 4);
+            tableLayoutPanel3.Margin = new Padding(4);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
@@ -534,7 +535,7 @@
             iconStatus.IconFont = FontAwesome.Sharp.IconFont.Solid;
             iconStatus.IconSize = 21;
             iconStatus.Location = new Point(149, 4);
-            iconStatus.Margin = new Padding(4, 4, 4, 4);
+            iconStatus.Margin = new Padding(4);
             iconStatus.Name = "iconStatus";
             iconStatus.Size = new Size(21, 22);
             iconStatus.TabIndex = 2;
@@ -591,7 +592,7 @@
             pnlButtons.Controls.Add(buttonResume);
             pnlButtons.Dock = DockStyle.Fill;
             pnlButtons.Location = new Point(0, 0);
-            pnlButtons.Margin = new Padding(4, 4, 4, 4);
+            pnlButtons.Margin = new Padding(4);
             pnlButtons.Name = "pnlButtons";
             pnlButtons.Size = new Size(259, 264);
             pnlButtons.TabIndex = 0;
@@ -647,7 +648,7 @@
             buttonCancel.IsToggled = false;
             buttonCancel.Location = new Point(4, 161);
             buttonCancel.LongPressDurationMS = 1000;
-            buttonCancel.Margin = new Padding(4, 4, 4, 4);
+            buttonCancel.Margin = new Padding(4);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.NormalFontStyle = FontStyle.Regular;
             buttonCancel.ParticleColor = Color.FromArgb(200, 200, 200);
@@ -724,7 +725,7 @@
             buttonPause.IsToggled = false;
             buttonPause.Location = new Point(4, 4);
             buttonPause.LongPressDurationMS = 1000;
-            buttonPause.Margin = new Padding(4, 4, 4, 4);
+            buttonPause.Margin = new Padding(4);
             buttonPause.Name = "buttonPause";
             buttonPause.NormalFontStyle = FontStyle.Regular;
             buttonPause.ParticleColor = Color.FromArgb(200, 200, 200);
@@ -801,7 +802,7 @@
             buttonResume.IsToggled = false;
             buttonResume.Location = new Point(4, 82);
             buttonResume.LongPressDurationMS = 1000;
-            buttonResume.Margin = new Padding(4, 4, 4, 4);
+            buttonResume.Margin = new Padding(4);
             buttonResume.Name = "buttonResume";
             buttonResume.NormalFontStyle = FontStyle.Regular;
             buttonResume.ParticleColor = Color.FromArgb(200, 200, 200);
